@@ -1,0 +1,15 @@
+# Not configured yet
+# See bin/apply_hooks.sh and bin/pre-commit
+#
+# Inspired by: https://betterprogramming.pub/2-use-cases-of-python-pre-commit-hooks-to-tidy-up-your-git-repositories-8d86c9c4f06b
+
+# repos:
+#   - repo: local
+#     hooks:
+#       - id: jupyter-nb-clear-output
+#         name: jupyter-nb-clear-output
+#         files: \.ipynb$
+#         stages: [commit]
+#         language: system
+#         entry: python -m nbconvert --ClearOutputPreprocessor.enabled=True --inplace
+
