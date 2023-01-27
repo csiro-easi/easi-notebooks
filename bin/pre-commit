@@ -12,7 +12,7 @@ for NB in $NBS; do
 
    # Update relative links and git add html
    html=`echo "$NB" | sed -E 's/\.ipynb$/.html/'`
-   sed -i'' 's:src="resources/:src="../resources/:' html/$html 
+   sed -i'' -r 's:src="([\./]*)resources/:src="\1../resources/:' html/$html 
    git add html/$html
 
    # Remove outputs from $NB  (NbConvertApp says what its doing)
