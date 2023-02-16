@@ -2,7 +2,6 @@
 
 import sys
 import logging
-import datacube
 
 # A class that provides notebook variables for each of the EASI deployments
 
@@ -11,7 +10,7 @@ import datacube
 deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
-        'productmap': {'landsat': 'ga_ls8c_ard_3', 's2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
@@ -19,15 +18,19 @@ deployment_map = {
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
-        'location': '',
-        'latitude': (0, 0),
-        'longitude': (0, 0),
-        'time': ('', ''),
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'location': 'Lake Tempe, Indonesia',
+        'latitude': (-4.2, -3.9),
+        'longitude': (119.8, 120.1),
+        'time': ('2020-02-01', '2020-04-01'),
+        'proxy': True,
+        'target': {
+            'landsat': {'crs': 'epsg:32650', 'resolution': (-30,30)},
+        },
     },
     'chile': {
         'domain': 'datacubechile.cl',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -35,7 +38,7 @@ deployment_map = {
     },
     'adias': {
         'domain': 'adias.aquawatchaus.space',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -55,7 +58,7 @@ deployment_map = {
         'domain': 'sub-apse2.easi-eo.solutions',
         'ows': False,
         'map': False,
-        'productmap': {'landsat': 'ga_ls8c_ard_3', 's2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
@@ -69,23 +72,12 @@ class EasiNotebooks():
     
     def __init__(self, deployment=None):
         """Initialise"""
-        self._log = self._getlogger(self.__class__.__name__)
+        self._log = _getlogger(self.__class__.__name__)
         self.name = deployment
         self.deployment = self._validate(deployment)
-        self.dc = datacube.Datacube()
-
-    def _getlogger(self, name):
-        """Return a logger"""
-        # Default logger
-        #   log.hasHandlers() = False
-        #   log.getEffectiveLevel() = 30 = warning
-        #   log.propagate = True
-        logger = logging.getLogger(name)
-        logger.setLevel(logging.INFO)
-        if not len(logger.handlers):
-            logger.addHandler(logging.StreamHandler(sys.stdout))
-        logger.propagate = False  # Do not propagate up to root logger, which may have other handlers
-        return logger
+        self.proxy = None
+        if self.deployment.get('proxy', None):
+            self.proxy = EasiCachingProxy()
     
     def _validate(self, deployment):
         """Validate"""
@@ -147,7 +139,7 @@ class EasiNotebooks():
         """Default time range"""
         return self.deployment['time']
 
-    def product(self, family = 'landsat'):
+    def product(self, family='landsat'):
         """Product name. Family loosely describes products from a satellite series or product type."""
         p = self.deployment['productmap'].get(family, None)
         if p is None:
@@ -156,3 +148,33 @@ class EasiNotebooks():
             self._log.warning(f'{self.name}: {out}')
             return None
         return p
+
+    def crs(self, family='landsat'):
+        """Default resolution. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('crs', None)
+    
+    def resolution(self, family='landsat'):
+        """Default resolution. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('resolution', None)
+
+
+class EasiCachingProxy():
+    """Set, unset and return information about the user's caching-proxy configuration"""
+    
+    def __init__(self):
+        pass
+    
+    
+    
+def _getlogger(name):
+    """Return a logger"""
+    # Default logger
+    #   log.hasHandlers() = False
+    #   log.getEffectiveLevel() = 30 = warning
+    #   log.propagate = True
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    if not len(logger.handlers):
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+    logger.propagate = False  # Do not propagate up to root logger, which may have other handlers
+    return logger
