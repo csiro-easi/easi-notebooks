@@ -15,6 +15,8 @@ The HTML versions are built by the [pre-commit hook](../bin/pre-commit) ([Contri
 
 #### Tutorials
 1. [01-welcome-to-easi.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/tutorials/01-welcome-to-easi.html)
+1. [02-data-storage.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/tutorials/02-data-storage.html)
+1. [03-visualisation.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/tutorials/03-visualisation.html)
 
 #### Case studies
 _In progress._
