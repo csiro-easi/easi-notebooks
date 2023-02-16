@@ -19,7 +19,7 @@ deployment_map = {
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
-        'productmap': {},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -27,7 +27,7 @@ deployment_map = {
     },
     'chile': {
         'domain': 'datacubechile.cl',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_rtc', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -35,7 +35,7 @@ deployment_map = {
     },
     'adias': {
         'domain': 'adias.aquawatchaus.space',
-        'productmap': {},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 's2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -55,34 +55,12 @@ deployment_map = {
         'domain': 'sub-apse2.easi-eo.solutions',
         'ows': False,
         'map': False,
-        'productmap': {},
-        'location': '',
-        'latitude': (0, 0),
-        'longitude': (0, 0),
-        'time': ('', ''),
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 's2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'location': 'Lake Hume, Australia',
+        'latitude': (-36.3, -35.8),
+        'longitude': (146.8, 147.3),
+        'time': ('2020-02-01', '2020-04-01'),
     },
-}
-
-# Product and measurement override values for where these are not available from the ODC metadata
-
-product_map = {
-    'landsat8_c2l2_sr': {},
-    's2_l2a': {},
-    'ga_ls8c_ard_3': {
-        'default_band': 'nbart_swir_2',
-        'band': {
-            'nbart_red': {'scale': 0.0001, 'offset': 0},
-            'nbart_green': {'scale': 0.0001, 'offset': 0},
-            'nbart_blue': {'scale': 0.0001, 'offset': 0},
-            'nbart_nir': {'scale': 0.0001, 'offset': 0},
-            'nbart_swir_2': {'scale': 0.0001, 'offset': 0},
-        },
-        'output_crs': None,
-        'resolution': None,
-    },
-    'ga_s2am_ard_3': {},
-    'asf_s1_rtc': {},
-    'copernicus_dem_30': {},
 }
 
 
@@ -178,46 +156,3 @@ class EasiNotebooks():
             self._log.warning(f'{self.name}: {out}')
             return None
         return p
-
-    # The following functions are not specific to any deployment
-    # Rather they are helper functions for additional product information
-
-    def default_band(self, product):
-        """A default measurement name for the product"""
-        band = product_map.get(product, {}).get('default_band', None)
-        if band is None:
-            # First band from dc?
-            pass
-        return band
-
-    def alias(self, product, alias):
-        """Measurement name corresponding to the alias"""
-        band = product_map.get(product, {}).get('alias', {}).get(alias, None)
-        if band is None:
-            # Check dc
-            pass
-        return band
-
-    def output_crs_resolution(self, product):
-        """Output CRS and resolution for the product"""
-        output_crs = product_map.get(product, {}).get('output_crs', None)
-        resolution = product_map.get(product, {}).get('resolution', None)
-        if output_crs is None:
-            # Check dc
-            pass
-        if resolution is None:
-            # Check dc
-            pass
-        return output_crs, resolution
- 
-    def scale_offset(self, product, band):
-        """Scale and output for the product and band"""
-        scale = product_map.get(product, {}).get('band', {}).get('scale', None)
-        offset = product_map.get(product, {}).get('band', {}).get('offset', None)
-        if scale is None:
-            # Check dc
-            pass
-        if offset is None:
-            # Check dc
-            pass
-        return scale, offset
