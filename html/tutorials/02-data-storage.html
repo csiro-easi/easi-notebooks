@@ -14598,19 +14598,189 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1>Data storage and locality <img align="right" src="../../resources/csiro_easi_logo.png"></h1>
-<p>This notebook introduces users to working with data in EASI and in the cloud.</p>
-<p>Understanding the location of data assets is important for efficiency in your code and reducing cloud-computing costs. In this notebook you will explore the different data read/write options available in EASI.</p>
-<p>By the end of this module, you will be able to:</p>
+<p>We have the potential to use and generate huge volumes of data, in different formats, for different purposes and across multiple projects and collaborations.</p>
+<p>How we store this data can have significant impacts on:</p>
 <ul>
-<li>Identify the different available storage options in EASI and recognize<ul>
+<li>Our compute efficiency and science productivity</li>
+<li>Our ability to connect with other researchers</li>
+<li>Our budget</li>
+<li>Our cybersecurity and</li>
+<li>Our commitment to Research Data Management policies, procedures, and practices</li>
+</ul>
+<p>So, how do we choose the right storage solution?</p>
+<p>This module will help you explore the different storage options on EASI, their use-cases, their limitations and how you can get started using them. By the end of this module, you will be able to:</p>
+<ul>
+<li>Identify the different available storage options in EASI and recognize:<ul>
 <li>When to use one or more storage options</li>
 <li>The different factors associated with these storage options (cost, security, latency etc)</li>
 </ul>
 </li>
-<li>Upload data for use in JupyterLab and with Dask workers</li>
-<li>Access resources to help build skills and knowledge to further your learning around storage.</li>
+<li>Upload data to use with your Jupyter Notebook and where to store data outputs for download or re-use by yourself or others.</li>
+<li>Access resources to help build skills and knowledge to further your learning around data storage options</li>
 </ul>
-<h3 id="Summary-of-data-storage-types">Summary of data storage types<a class="anchor-link" href="#Summary-of-data-storage-types">&#182;</a></h3><table>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="How-do-we-normally-store-data?">How do we normally store data?<a class="anchor-link" href="#How-do-we-normally-store-data?">&#182;</a></h2><p>If you have been using a computer, chances are that you are familiar with storing data on your home drive, or on an external hard drive, or maybe even on the cloud. This is typically referred to as <strong>File Storage</strong>.</p>
+<p>With file storage, all data is stored together (usually in one file) and the file extension type helps determine the applications that can read or open the file and access the data (e.g., .jpg, .docx, or .txt).</p>
+<p>File storage systems also make it easier for users to find and manage files using a hierarchical structure that organizes files into folders and subfolders. To access the file, select or enter the path of the file, including subdirectories and file name. Most users manage their file storage using a simple file system such as a file manager.</p>
+<p>There are other alternatives to the everyday local file storage, like network file storage (connect to the network server first then access by path/file) and <em>Object Storage</em>, which is most relevant to cloud-computing.</p>
+<p><strong>Object storage</strong> is like a giant virtual bucket where you can store your belongings in labelled boxes. Each box has a unique ID and can hold different types of objects. You can easily add or remove boxes as needed, and the bucket can expand to accommodate more and more boxes. Plus, you can access any box from anywhere in the world, if you have the ID and access permission. Object storage is ideal for storing vast amounts of unstructured data, such as videos, images, and documents, and is commonly used in cloud storage services. You can have many Buckets where you can store vast amounts of your data and they can all have different access permissions and life cycles.</p>
+<p>EASI supports many types of data storage, local and network file storage and Object Storage, and each method has certain advantages, limitations and requirements. EASI also manages data for all users in the Open Data Cube, and there are third-party datasets accessible directly in the Cloud.</p>
+<p>Some additional terms that may be helpful when talking about Data Storage:</p>
+<p><strong>Latency</strong></p>
+<p>Data latency is the time it takes for data packets to be stored or retrieved.</p>
+<p><strong>Data Retrieval</strong></p>
+<p>The process of identifying and extracting data from a database or storage system, based on a query provided by the user or application. It enables the fetching of data from storage in order to display it on a monitor and/or use within an application.</p>
+<p><strong>Cache</strong></p>
+<p>A high-speed memory or storage device that helps reduce the time required to read and write data to a slower device, such as a hard drive or a remote server (or bucket).</p>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Different-Storage-Types-in-EASI">Different Storage Types in EASI<a class="anchor-link" href="#Different-Storage-Types-in-EASI">&#182;</a></h2><ul>
+<li><a href="#Home-Directory">Type 1: Home Directory</a></li>
+<li><a href="#DataCube">Type 2: DataCube</a></li>
+<li><a href="#User-Scratch">Type 3: User Scratch</a></li>
+<li><a href="#Project-Based-Data">Type 4: Project Based Data</a></li>
+<li><a href="#Cloud-Data">Type 5: Cloud Data</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Home-Directory">Home Directory<a class="anchor-link" href="#Home-Directory">&#182;</a></h3><p><strong>What is the Home Directory?</strong></p>
+<p>The Home Directory uses the Amazon Web Service (AWS) Elastic File System (EFS) storage architecture. This is similar to a normal network file system in that it has folders, sub folders and files and it very easy and familiar to navigate and use.</p>
+<p><strong>When would I use the Home Directory to store data?</strong></p>
+<p>The Home Directory is best used for small files including source code and notebooks and smaller sets of data outputs.</p>
+<p>You can also use the Home Directory to store files that cannot readily work from other storage options (i.e., files or programs that require a normal file system). Again, if these are large, then you may wish to find an alternative and your EASI Administrator will be happy to advise.</p>
+<p><strong>What are the advantages of the Home Directory?</strong></p>
+<p>The data housed in your Home Directory is persistent through log-in/log-out cycles (you will see your home directory in the state as you left it). The home directory is also automatically backed-up nightly and retained for 90 days.</p>
+<p>The EASI Admin team can restore a file. However this is not always guaranteed. If you are looking for more stable and long-term storage, there are better solutions out there!</p>
+<p><strong>What are the limitations of the Home Directory?</strong></p>
+<p>This is the most expensive form of storage available on EASI. It is ok to store a Gigabyte or so of data, code and outputs. For larger datasets and outputs there are other EASI storage types available.</p>
+<p>Note that your home directory is not visible to <em>Dask</em> workers, as they run in a different part of EASI. We will learn about the Python <em>Dask</em> library later in the module.</p>
+<p><strong>How do I upload and use data?</strong></p>
+<p>There’s a video of this and information in the <a href="https://jupyterlab.readthedocs.io/en/stable/user/files.html">Jupyter labs documentation</a>.</p>
+<ul>
+<li>For small files, it is simplest to drag-and-drop your files into the JupyterLab file interface directly from your desktop. This will upload the file via your browser into your home directory.</li>
+<li>For larger files, it's best to use the AWS CLI running locally along with your EASI credentials and upload directly to your <a href="#User-Scratch">EASI S3 User Scratch space</a> space.</li>
+</ul>
+<p>Example usage and EASI documentation: <a href="https://docs.csiro.easi-eo.solutions/user-guide/users-guide/07-uploading-data/">https://docs.csiro.easi-eo.solutions/user-guide/users-guide/07-uploading-data/</a></p>
+<p><strong>Tasks</strong></p>
+<p>Jump into the training notebooks to explore some of the below activities you can complete.</p>
+<ul>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>Familiarise yourself with the JupyterLabs documentation.</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>Upload some of your own data or file to JupyterLab home directory.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="DataCube">DataCube<a class="anchor-link" href="#DataCube">&#182;</a></h3><p><strong>What is DataCube?</strong></p>
+<p>The <a href="https://github.com/opendatacube">Open Data Cube (ODC)</a> is an Open-Source Geospatial Data Management and Analysis Software project that helps you harness the power of Satellite data. At its core, the ODC is a set of Python libraries and PostgreSQL database that helps you work with geospatial raster data.</p>
+<p>The broad goal of the ODC is to make it easier to access and use large data holdings, without requiring data to be stored in a specific way or in a specific place. What this means is that you can point it at your data repository and index the data where it sits, abstracting the complexity of managing large, distributed data holdings.</p>
+<p><strong>EASI managed data</strong></p>
+<p>EASI manages an amount of data in its datacube databases. These can be viewed in each EASI's Explorer website and with the <em>Datacube()</em> API.</p>
+<ul>
+<li>This is the CSIRO Explorer site: <a href="https://explorer.csiro.easi-eo.solutions/">https://explorer.csiro.easi-eo.solutions/</a></li>
+<li>The EASI documentation <a href="https://docs.csiro.easi-eo.solutions/user-guide/developers/easi-platform-overview/#easi-deployments-services-and-support">lists the URLs for other EASIs</a>.</li>
+</ul>
+<p>There are many commonalities in the data preparation pipelines into a datacube databases across the ODC community. We do this so that its easier to move your work between ODC systems (including third-parties). The EASI team are working to make our data processing pipelines transparent and open to contributions.</p>
+<p><strong>When would I use the DataCube</strong></p>
+<p>If you’re using data that’s available as EASI managed data, then it’s much easier to use via the ODC API and you don’t have to have your own copy! See the <a href="https://github.com/csiro-easi/easi-notebooks">easi-notebooks</a> for getting started tutorials.</p>
+<p><strong>What are the advantages of the DataCube?</strong></p>
+<p>DataCube is managed for you! So, you don’t need to worry about updates, maintenance, storage costs etc. Many EO and large public data collections are available, or becoming available, via the cloud. EASI and ODC connects directly to the current best collections endpoints and API services, and utilises cloud efficiencies and capabilities where possible.</p>
+<p>Many of the data collections and processing routines are open source, and are contributed to by the ODC, research and domain-coordination communities. EASI leverages and contributes to these open resources to enure our users stay up to date.</p>
+<hr />
+<p>For development work, Easier access via Open Data Cube library</p>
+<p>You can build and manage your own library and upload your own data into a datacube! Contact easi-help@csiro.au for admin assistance.</p>
+<p>What are the limitations of the DataCube?</p>
+<p>It may not have the specific dataset you are looking for – but you can build your own and share it!</p>
+<p>ODC API may not suit your overall workflow – but there are ways to get the underlying list of files so you can still exploit some aspects or access the storage directly</p>
+<p>How do I upload and use data?</p>
+<p>Getting start with using data from, and uploading to, the Open Data Cube is straightforward. You can explore the training notebooks in the git repository.</p>
+<p><a href="https://dev.azure.com/csiro-easi/easi-hub-public/_git/hub-notebooks?path=/EASI%20Training/03%20-%20Loading%20Data.ipynb&amp;_a=preview">https://dev.azure.com/csiro-easi/easi-hub-public/_git/hub-notebooks?path=/EASI%20Training/03%20-%20Loading%20Data.ipynb&amp;_a=preview</a></p>
+<p><a href="https://github.com/csiro-easi/easi-notebooks">https://github.com/csiro-easi/easi-notebooks</a> (.. TBA)</p>
+<p>Tasks</p>
+<p>Jump into the training notebooks to explore some of the below activities you can complete.</p>
+<p>upload a shapefile (copy from some resource or choose your own)</p>
+<p>load EO datacube into an xarray</p>
+<p>mask with an uploaded shapefile</p>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="User-Scratch">User Scratch<a class="anchor-link" href="#User-Scratch">&#182;</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Project-Based-Data">Project Based Data<a class="anchor-link" href="#Project-Based-Data">&#182;</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Cloud-Data">Cloud Data<a class="anchor-link" href="#Cloud-Data">&#182;</a></h3>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Scenarios-and-summary-of-data-storage-types">Scenarios and summary of data storage types<a class="anchor-link" href="#Scenarios-and-summary-of-data-storage-types">&#182;</a></h3><table>
 <thead>
 <tr>
   <th>Type</th>
@@ -14652,6 +14822,57 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </tr>
 </tbody>
 </table>
+<p>Scenario 1</p>
+<ul>
+<li>I want to upload some small data files and use these with datacube data</li>
+<li><blockquote>
+home directory</blockquote>
+</li>
+</ul>
+<p>Scanario 2</p>
+<ul>
+<li>I want to upload a boot-load of data from my organisation to use in easi</li>
+<li><blockquote>
+get EASI aws creds (from EASI JupyterLab)</blockquote>
+</li>
+<li><blockquote>
+upload to user-scratch or project buckets</blockquote>
+</li>
+</ul>
+<p>Scenario 3</p>
+<ul>
+<li>I am generating a boot-load of output files and I'd like to store them somewhere. These may be coming from my notebook and or dask workers</li>
+<li>Are they temporary or to be shared with collaborators?</li>
+<li><blockquote>
+temporary &gt; user scratch</blockquote>
+</li>
+<li><blockquote>
+shared &gt; project bucket</blockquote>
+</li>
+</ul>
+<p>Scenario 4</p>
+<ul>
+<li>I want to add my own product to the datacube</li>
+<li><blockquote>
+very good! talk to the easi admins .. we're making this easier.</blockquote>
+</li>
+</ul>
+<p>Scenario 5</p>
+<ul>
+<li>I want to access other data from the cloud</li>
+<li><blockquote>
+consider region transfer costs</blockquote>
+</li>
+<li><blockquote>
+consider cloud authentication</blockquote>
+</li>
+<li><blockquote>
+consider caching-proxy</blockquote>
+</li>
+<li><blockquote>
+try odc-stac</blockquote>
+</li>
+</ul>
 
 </div>
 </div>
@@ -14664,6 +14885,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Home-directory">Home directory<a class="anchor-link" href="#Home-directory">&#182;</a></h2><p>Your EASI home directory is available in JupyterLab. It appears in JupyterLab as the left panel and via the terminal.</p>
+<p>POSIX</p>
 <p>TODO: Add pic</p>
 <p><strong>What is the Home Directory?</strong></p>
 <ul>
@@ -14700,7 +14922,11 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="User-scratch">User scratch<a class="anchor-link" href="#User-scratch">&#182;</a></h2><p>EASI has a &quot;User scratch&quot; S3 storage bucket that users can write to.</p>
+<h2 id="User-scratch">User scratch<a class="anchor-link" href="#User-scratch">&#182;</a></h2><p><em>Object store</em></p>
+<ul>
+<li>each file is a generic <em>object</em> with a <em>key</em>. A <em>key</em> is a string. There is no directory structure, however we humans often use '/' in keys to create a view</li>
+</ul>
+<p>EASI has a &quot;User scratch&quot; S3 storage bucket that users can write to.</p>
 <ul>
 <li>You can use the AWS CLI and library functions to write larger files to this bucket.</li>
 <li>Objects in the bucket have a 30 day (since creation lifecycle rule), so it’s appropriate for saving intermediate results and distributed data to your dask workers</li>
@@ -14719,7 +14945,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </ul>
 <p><strong>What are the limitations of the UserScratch?</strong></p>
 <p>It’s Object Storage, which is a bit different to POSIX so it requries a different method to access and manage the data. Most tooling these days will support object storage directly but older tools that haven’t been updated may not.</p>
-<p><strong>Exercise / Simulation?:</strong> Save xarray masked result (from previous sim) to user scratch</p>
+<p><strong>Exercise / Simulation?:</strong> Specifci task demo (e,g Save xarray masked result (from previous sim) to user scratch)</p>
 
 </div>
 </div>
@@ -14731,7 +14957,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Project-data">Project data<a class="anchor-link" href="#Project-data">&#182;</a></h2><p><strong>What is Project Data?</strong></p>
+<h2 id="Project-data">Project data<a class="anchor-link" href="#Project-data">&#182;</a></h2><p>Similar to user scratch</p>
+<p><strong>What is Project Data?</strong></p>
 <ul>
 <li>Similar to the “user scratch bucket” projects can also make additional storage resources available for their users in EASI. That is the project bucket can be shared across all project members and have different levels of membership (read/write, read-only)</li>
 <li>There is an EASI account hosted project bucket, you can request a project share by contacting your EASI Administrators</li>
@@ -14770,7 +14997,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Data-cube">Data cube<a class="anchor-link" href="#Data-cube">&#182;</a></h2><p><strong>What is DataCube?</strong></p>
+<h2 id="Data-cube">Data cube<a class="anchor-link" href="#Data-cube">&#182;</a></h2><p>Info only. Examples are everywhere else</p>
+<p><strong>What is DataCube?</strong></p>
 <ul>
 <li>These are indexed in the datacube database and available from the datacube API</li>
 <li>EASI managed data (what we do)</li>
@@ -14821,7 +15049,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Cloud-computing-data">Cloud-computing data<a class="anchor-link" href="#Cloud-computing-data">&#182;</a></h2><p><strong>What is Cloud Data and what cloud data services / technologies does EASI support?</strong></p>
+<h2 id="Cloud-computing-data">Cloud-computing data<a class="anchor-link" href="#Cloud-computing-data">&#182;</a></h2><p>Links to other resources. Intro to odc-stac.</p>
+<p><strong>What is Cloud Data and what cloud data services / technologies does EASI support?</strong></p>
 <ul>
 <li>Many data providers are making their data available directly in the Cloud.</li>
 <li>The amount and variety of data and providers is vast and we can’t cover them all here but will highlight that they can in most cases be accessed directly from EASI.</li>
