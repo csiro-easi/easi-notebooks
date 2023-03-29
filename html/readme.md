@@ -20,3 +20,6 @@ The HTML versions are built by the [pre-commit hook](../bin/pre-commit) ([Contri
 
 #### Case studies
 _In progress._
+
+#### Datasets
+- [sentinel-1-example.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/datasets/sentinel-1-example.html)

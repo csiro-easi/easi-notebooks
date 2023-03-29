@@ -10,7 +10,7 @@ import logging
 deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
-        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'sentinel-1': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
@@ -18,7 +18,7 @@ deployment_map = {
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tempe, Indonesia',
         'latitude': (-4.2, -3.9),
         'longitude': (119.8, 120.1),
@@ -30,7 +30,7 @@ deployment_map = {
     },
     'chile': {
         'domain': 'datacubechile.cl',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
@@ -38,7 +38,7 @@ deployment_map = {
     },
     'adias': {
         'domain': 'adias.aquawatchaus.space',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
         'longitude': (0, 0),
