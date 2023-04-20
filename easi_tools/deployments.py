@@ -1,6 +1,7 @@
 #!python3
 
 import sys
+import os
 import logging
 
 # A class that provides notebook variables for each of the EASI deployments
@@ -10,6 +11,7 @@ import logging
 deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
+        'db_database': '',
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
@@ -18,6 +20,7 @@ deployment_map = {
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
+        'db_database': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tempe, Indonesia',
         'latitude': (-4.2, -3.9),
@@ -30,6 +33,7 @@ deployment_map = {
     },
     'chile': {
         'domain': 'datacubechile.cl',
+        'db_database': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
@@ -38,6 +42,7 @@ deployment_map = {
     },
     'adias': {
         'domain': 'adias.aquawatchaus.space',
+        'db_database': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
@@ -46,6 +51,7 @@ deployment_map = {
     },
     'eail': {
         'domain': 'eail.easi-eo.solutions',
+        'db_database': 'ceoseail_eail_db',
         'ows': False,
         'map': False,
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'s1_rtc', 'dem': 'copernicus_dem_30'},
@@ -59,6 +65,7 @@ deployment_map = {
     },
     'sub-apse2': {
         'domain': 'sub-apse2.easi-eo.solutions',
+        'db_database': '',
         'ows': False,
         'map': False,
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
@@ -79,17 +86,24 @@ class EasiNotebooks():
         self.name = deployment
         self.deployment = self._validate(deployment)
         self.proxy = None
-        if self.deployment.get('proxy', None):
+        if self.deployment and self.deployment.get('proxy', None):
             self.proxy = EasiCachingProxy()
     
     def _validate(self, deployment):
         """Validate"""
         names = deployment_map.keys()
+        deployment = deployment if deployment else self._find_deployment()
         if deployment is None or deployment not in names:
             self._log.error(f'Deployment name not recognised: {deployment}')
             self._log.error(f'Select one of: {", ".join(names)}')
             return None
         return deployment_map[deployment]
+    
+    def _find_deployment(self):
+        db_database = os.environ['DB_DATABASE']
+        deployment = next(item for item in deployment_map if deployment_map[item]["db_database"] == db_database)
+        return deployment
+        
     
     @property
     def domain(self):
