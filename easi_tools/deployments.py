@@ -48,11 +48,14 @@ deployment_map = {
         'domain': 'eail.easi-eo.solutions',
         'ows': False,
         'map': False,
-        'productmap': {},
-        'location': '',
-        'latitude': (0, 0),
-        'longitude': (0, 0),
-        'time': ('', ''),
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'s1_rtc', 'dem': 'copernicus_dem_30'},
+        'location': 'Newport News, Virginia',
+        'latitude': (37.02, 37.12),
+        'longitude': (-76.55, -76.45),
+        'time': ('2022-01-01', '2022-04-01'),
+        'target': {
+            'landsat': {'crs': 'epsg:32618', 'resolution': (-30,30)},
+        }
     },
     'sub-apse2': {
         'domain': 'sub-apse2.easi-eo.solutions',
