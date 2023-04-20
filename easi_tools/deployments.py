@@ -101,8 +101,16 @@ class EasiNotebooks():
     
     def _find_deployment(self):
         db_database = os.environ['DB_DATABASE']
-        deployment = next(item for item in deployment_map if deployment_map[item]["db_database"] == db_database)
-        return deployment
+        deployment = [item for item in deployment_map if deployment_map[item]["db_database"] == db_database]
+        if len(deployment)==1:
+            return deployment[0]
+        elif len(deployment)==0:
+            self._log.error('Deployment could not be found automatically, try specifying one using EasiNotebooks(deployment="deployment_name").')
+            return None
+        elif len(deployment)>1:
+            self._log.error('More than one deployment found')
+            return None
+        
         
     
     @property
