@@ -83,16 +83,18 @@ class EasiNotebooks():
     def __init__(self, deployment=None):
         """Initialise"""
         self._log = _getlogger(self.__class__.__name__)
-        self.name = deployment
-        self.deployment = self._validate(deployment)
+        self.name = deployment if deployment else self._find_deployment()
+        self.deployment = self._validate(self.name)
         self.proxy = None
         if self.deployment and self.deployment.get('proxy', None):
             self.proxy = EasiCachingProxy()
+        if self.deployment:
+            self._log.info(f'Successfully found configuration for deployment "{self.name}"')
     
     def _validate(self, deployment):
         """Validate"""
         names = deployment_map.keys()
-        deployment = deployment if deployment else self._find_deployment()
+        # deployment = deployment if deployment else self._find_deployment()
         if deployment is None or deployment not in names:
             self._log.error(f'Deployment name not recognised: {deployment}')
             self._log.error(f'Select one of: {", ".join(names)}')
@@ -101,13 +103,13 @@ class EasiNotebooks():
     
     def _find_deployment(self):
         db_database = os.environ['DB_DATABASE']
-        deployment = [item for item in deployment_map if deployment_map[item]["db_database"] == db_database]
-        if len(deployment)==1:
-            return deployment[0]
-        elif len(deployment)==0:
+        deployment_name = [item for item in deployment_map if deployment_map[item]["db_database"] == db_database]
+        if len(deployment_name)==1:
+            return deployment_name[0]
+        elif len(deployment_name)==0:
             self._log.error('Deployment could not be found automatically, try specifying one using EasiNotebooks(deployment="deployment_name").')
             return None
-        elif len(deployment)>1:
+        elif len(deployment_name)>1:
             self._log.error('More than one deployment found')
             return None
         
