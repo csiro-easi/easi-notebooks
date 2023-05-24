@@ -11,12 +11,12 @@ for NB in $NBS; do
    jupyter nbconvert --to=html --output-dir=html/`dirname "$NB"` "$NB"
 
    # Update relative links and git add html
-   html=`echo "$NB" | sed -E 's/\.ipynb$/.html/'`
-   sed -i'' -r 's:src="([\./]*)resources/:src="\1../resources/:' html/$html 
-   git add html/$html
+   HTML=`echo "$NB" | sed -E 's/\.ipynb$/.html/'`
+   sed -i'' -r 's:src="([\./]*)resources/:src="\1../resources/:' "html/$HTML"
+   git add "html/$HTML"
 
    # Remove outputs from $NB  (NbConvertApp says what its doing)
-   jupyter nbconvert --clear-output "$NB"  # includes --inplace
    # jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace "$NB"
+   jupyter nbconvert --clear-output "$NB"
    git add "$NB"
 done
