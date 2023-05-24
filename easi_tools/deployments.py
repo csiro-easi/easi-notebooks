@@ -10,6 +10,7 @@ import logging
 deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
+        'scratch': 'easihub-csiro-user-scratch',
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
@@ -18,6 +19,7 @@ deployment_map = {
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
+        'scratch': 'easi-asia-user-scratch',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tempe, Indonesia',
         'latitude': (-4.2, -3.9),
@@ -118,6 +120,11 @@ class EasiNotebooks():
             self._log.warning(f'Deployment does not have a Map service: {self.name}')
             return None
         return f'https://map.{self._domain()}'
+
+    @property
+    def scratch(self):
+        """Scratch bucket"""
+        return self.deployment['scratch']
 
     @property
     def location(self):
