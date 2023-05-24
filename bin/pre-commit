@@ -2,6 +2,10 @@
 #
 # Adapted from https://gist.github.com/minrk/6176788
 
+OIFS=$IFS
+IFS='
+'
+
 # Find notebooks to be committed
 NBS=`git diff-index --cached HEAD --name-status | grep -v ^D | cut -f2 | grep -ao -e '.*.ipynb' | uniq`
 # echo $NBS
@@ -20,3 +24,4 @@ for NB in $NBS; do
    jupyter nbconvert --clear-output "$NB"
    git add "$NB"
 done
+IFS=$OIFS
