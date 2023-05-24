@@ -12,7 +12,7 @@ deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
         'db_database': '',
-        'scratch_bucket': '',
+        'scratch': '',
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
@@ -22,7 +22,7 @@ deployment_map = {
     'asia': {
         'domain': 'asia.easi-eo.solutions',
         'db_database': '',
-        'scratch_bucket': '',
+        'scratch': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tempe, Indonesia',
         'latitude': (-4.2, -3.9),
@@ -36,7 +36,7 @@ deployment_map = {
     'chile': {
         'domain': 'datacubechile.cl',
         'db_database': 'easido_prod_db',
-        'scratch_bucket': 'easido-prod-user-scratch',
+        'scratch': 'easido-prod-user-scratch',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
@@ -46,7 +46,7 @@ deployment_map = {
     'adias': {
         'domain': 'adias.aquawatchaus.space',
         'db_database': '',
-        'scratch_bucket': '',
+        'scratch': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
         'latitude': (0, 0),
@@ -56,7 +56,7 @@ deployment_map = {
     'eail': {
         'domain': 'eail.easi-eo.solutions',
         'db_database': 'ceoseail_eail_db',
-        'scratch_bucket': 'ceoseail-eail-user-scratch',
+        'scratch': 'ceoseail-eail-user-scratch',
         'ows': False,
         'map': False,
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'s1_rtc', 'dem': 'copernicus_dem_30'},
@@ -71,7 +71,7 @@ deployment_map = {
     'sub-apse2': {
         'domain': 'sub-apse2.easi-eo.solutions',
         'db_database': '',
-        'scratch_bucket': '',
+        'scratch': '',
         'ows': False,
         'map': False,
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
@@ -83,8 +83,8 @@ deployment_map = {
 }
 
 
-class EasiNotebooks():
-    """Provide deployment-specific variables for EASI notebooks"""
+class EasiDefaults():
+    """Provide deployment-specific default variables for EASI notebooks"""
     
     def __init__(self, deployment=None):
         """Initialise"""
@@ -113,13 +113,11 @@ class EasiNotebooks():
         if len(deployment_name)==1:
             return deployment_name[0]
         elif len(deployment_name)==0:
-            self._log.error('Deployment could not be found automatically, try specifying one using EasiNotebooks(deployment="deployment_name").')
+            self._log.error('Deployment could not be found automatically, try specifying one using EasiDefaults(deployment="deployment_name").')
             return None
         elif len(deployment_name)>1:
             self._log.error('More than one deployment found')
             return None
-        
-        
     
     @property
     def domain(self):
@@ -130,11 +128,6 @@ class EasiNotebooks():
     def db_database(self):
         """Database name"""
         return self.deployment['db_database']
-    
-    @property
-    def scratch_bucket(self):
-        """Scratch bucket"""
-        return self.deployment['scratch_bucket']
     
     @property
     def hub(self):
@@ -161,6 +154,11 @@ class EasiNotebooks():
             self._log.warning(f'Deployment does not have a Map service: {self.name}')
             return None
         return f'https://map.{self._domain()}'
+
+    @property
+    def scratch(self):
+        """Scratch bucket"""
+        return self.deployment['scratch']
 
     @property
     def location(self):
