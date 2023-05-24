@@ -1,4 +1,4 @@
 #!python 3
 
-from .deployments import EasiNotebooks
+from .deployments import EasiDefaults
 from .common import xarray_object_size
