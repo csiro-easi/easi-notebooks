@@ -3,6 +3,7 @@
 import sys
 import os
 import logging
+import collections
 
 # A class that provides notebook variables for each of the EASI deployments
 
@@ -19,10 +20,14 @@ deployment_map = {
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
         'time': ('2020-02-01', '2020-04-01'),
-        'target': {
-            'landsat': {'qa_band': 'oa_fmask', 'qa_mask': {'fmask':'valid'},
-                        'nir': 'nbart_nir', 'red': 'nbart_red'},
+        'aliases': {
+            'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
+                        'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
+                        'qa_band': 'oa_fmask'}
         },
+        'qa_mask': {
+            'landsat': {'fmask':'valid'}
+        }
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
@@ -37,7 +42,15 @@ deployment_map = {
         'proxy': True,
         'target': {
             'landsat': {'crs': 'epsg:32650', 'resolution': (-30,30)},
+            'sentinel-2': {'crs': 'epsg:32650', 'resolution': (-10,10)}
         },
+        'aliases': {
+            'landsat': {'qa_band': 'qa_pixel'}
+        },
+        'qa_mask': {
+            'landsat': {'nodata': False, 'water': 'land_or_cloud',
+                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
+        }
     },
     'chile': {
         'domain': 'datacubechile.cl',
@@ -54,6 +67,13 @@ deployment_map = {
         'target': {
             'landsat': {'crs': 'epsg:32718', 'resolution': (-30,30)},
             'sentinel-2': {'crs': 'epsg:32718', 'resolution': (-10,10)}
+        },
+        'aliases': {
+            'landsat': {'qa_band': 'qa_pixel'},
+        },
+        'qa_mask': {
+            'landsat': {'nodata': False, 'water': 'land_or_cloud',
+                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
         }
     },
     'adias': {
@@ -66,6 +86,13 @@ deployment_map = {
         'latitude': (0, 0),
         'longitude': (0, 0),
         'time': ('', ''),
+        'aliases': {
+            'landsat': {'qa_band': 'qa_pixel'},
+        },
+        'qa_mask': {
+            'landsat': {'nodata': False, 'water': 'land_or_cloud',
+                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
+        }
     },
     'eail': {
         'domain': 'eail.easi-eo.solutions',
@@ -82,6 +109,13 @@ deployment_map = {
         'target': {
             'landsat': {'crs': 'epsg:32618', 'resolution': (-30,30)},
             'sentinel-2': {'crs': 'epsg:32618', 'resolution': (-10,10)}
+        },
+        'aliases': {
+            'landsat': {'qa_band': 'qa_pixel'},
+        },
+        'qa_mask': {
+            'landsat': {'nodata': False, 'water': 'land_or_cloud',
+                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
         }
     },
     'sub-apse2': {
@@ -109,6 +143,7 @@ class EasiDefaults():
         self.name = deployment if deployment else self._find_deployment()
         self.deployment = self._validate(self.name)
         self.proxy = None
+        self._aliases = {}
         if self.deployment and self.deployment.get('proxy', None):
             self.proxy = EasiCachingProxy()
         if self.deployment:
@@ -237,21 +272,35 @@ class EasiDefaults():
         """Default resolution. Family loosely describes products from a satellite series or product type."""
         return self.deployment.get('target', {}).get(family, {}).get('resolution', None)
 
-    def qa_band(self, family='landsat'):
-        """Default QA band. Family loosely describes products from a satellite series or product type."""
-        return self.deployment.get('target', {}).get(family, {}).get('qa_band', None)
+    def aliases(self, family='landsat') -> collections.UserDict:
+        """Return a dict-like object that maps a common name to a specific measurement/alias name.
+        Family loosely describes products from a satellite series or product type.
+        
+        The common name is returned if there is no specific measurement/alias name defined.
+        That is, the common name should work as a measurement/alias name for the family in this deployment.
+        Else, provide a specific measurement/alias name in the defaults above.
+        """
+        if family not in self._aliases:
+            self._aliases[family] = EasiAlias(self.deployment.get('aliases', {}).get(family, {}))
+        return self._aliases[family]
 
-    def qa_mask(self, family='landsat'):
+    def qa_mask(self, family='landsat') -> dict:
         """Default QA mask values. Family loosely describes products from a satellite series or product type."""
-        return self.deployment.get('target', {}).get(family, {}).get('qa_mask', None)
+        return self.deployment.get('qa_mask', {}).get(family, {})
 
-    def nir(self, family='landsat'):
-        """Default NIR band. Family loosely describes products from a satellite series or product type."""
-        return self.deployment.get('target', {}).get(family, {}).get('nir', None)
 
-    def red(self, family='landsat'):
-        """Default Red band. Family loosely describes products from a satellite series or product type."""
-        return self.deployment.get('target', {}).get(family, {}).get('red', None)
+class EasiAlias(collections.UserDict):
+    """Custom UserDict that returns a default measurement name for a given key if defined.
+    Else returns the key as the value. Items can not be set."""
+    def __init__(self, default:dict = {}):
+        self.data = default
+        self._log = _getlogger(self.__class__.__name__)
+    def __getitem__(self, key):
+        if key in self.data:
+            return self.data[key]
+        return key
+    def __setitem__(self, key, val):
+        self._log.error(f'Error <{self.__class__.__name__}>: Can not set items')
 
 
 class EasiCachingProxy():
