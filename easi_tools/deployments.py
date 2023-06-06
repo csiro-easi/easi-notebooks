@@ -11,7 +11,7 @@ import logging
 deployment_map = {
     'csiro': {
         'domain': 'csiro.easi-eo.solutions',
-        'db_database': '',
+        'db_database': 'easihub_csiro_db',
         'training_shapefile': '',
         'scratch': 'easihub-csiro-user-scratch',
         'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
@@ -19,10 +19,14 @@ deployment_map = {
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
         'time': ('2020-02-01', '2020-04-01'),
+        'target': {
+            'landsat': {'qa_band': 'oa_fmask', 'qa_mask': {'fmask':'valid'},
+                        'nir': 'nbart_nir', 'red': 'nbart_red'},
+        },
     },
     'asia': {
         'domain': 'asia.easi-eo.solutions',
-        'db_database': '',
+        'db_database': 'easi_asia_db',
         'training_shapefile': '',
         'scratch': 'easi-asia-user-scratch',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
@@ -55,7 +59,7 @@ deployment_map = {
     'adias': {
         'domain': 'adias.aquawatchaus.space',
         'db_database': '',
-        'training-shapefile': '',
+        'training_shapefile': '',
         'scratch': '',
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': '',
@@ -110,29 +114,28 @@ class EasiDefaults():
         if self.deployment:
             self._log.info(f'Successfully found configuration for deployment "{self.name}"')
     
-    def _validate(self, deployment):
-        """Validate"""
+    def _validate(self, deployment) -> dict:
+        """Return the dict associated with the deployment name"""
         names = deployment_map.keys()
-        # deployment = deployment if deployment else self._find_deployment()
         if deployment is None or deployment not in names:
             self._log.error(f'Deployment name not recognised: {deployment}')
             self._log.error(f'Select one of: {", ".join(names)}')
             return None
         return deployment_map[deployment]
     
-    def _find_deployment(self):
+    def _find_deployment(self) -> str:
+        """Use the deployment's database environment variable as a lookup into the deployment_map dict"""
         db_database = os.environ['DB_DATABASE']
         deployment_name = [item for item in deployment_map if deployment_map[item]["db_database"] == db_database]
-        if len(deployment_name)==1:
-            return deployment_name[0]
-        elif len(deployment_name)==0:
-            self._log.error('Deployment could not be found automatically, try specifying one using EasiDefaults(deployment="deployment_name").')
+        msg = 'Try specifying one using EasiDefaults(deployment="deployment_name").'
+        if len(deployment_name) == 0:
+            self._log.error(f'Deployment could not be found automatically. {msg}')
             return None
-        elif len(deployment_name)>1:
-            self._log.error('More than one deployment found')
+        elif len(deployment_name) > 1:
+            self._log.error(f'More than one deployment found. {msg}')
             return None
-        
-        
+        return deployment_name[0]
+
     
     @property
     def domain(self):
@@ -146,7 +149,7 @@ class EasiDefaults():
 
     @property
     def training_shapefile(self):
-        """Database name"""
+        """A local shapefile"""
         return self.deployment['training_shapefile']
     
     @property
@@ -198,12 +201,18 @@ class EasiDefaults():
     @property
     def latitude_big(self):
         """Default big latitude range"""
-        return self.deployment['latitude_big']
+        if 'latitude_big' in self.deployment:
+            return self.deployment['latitude_big']
+        self._log.warning(f'Default big latitude range not defined for "{self.deployment}". Using default latitude range')
+        return self.latitude
     
     @property
     def longitude_big(self):
         """Default big longitude range"""
-        return self.deployment['longitude_big']
+        if 'longitude_big' in self.deployment:
+            return self.deployment['longitude_big']
+        self._log.warning(f'Default big longitude range not defined for "{self.deployment}". Using default longitude range')
+        return self.latitude
 
     @property
     def time(self):
@@ -223,22 +232,36 @@ class EasiDefaults():
     def crs(self, family='landsat'):
         """Default resolution. Family loosely describes products from a satellite series or product type."""
         return self.deployment.get('target', {}).get(family, {}).get('crs', None)
-    
+
     def resolution(self, family='landsat'):
         """Default resolution. Family loosely describes products from a satellite series or product type."""
         return self.deployment.get('target', {}).get(family, {}).get('resolution', None)
 
+    def qa_band(self, family='landsat'):
+        """Default QA band. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('qa_band', None)
+
+    def qa_mask(self, family='landsat'):
+        """Default QA mask values. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('qa_mask', None)
+
+    def nir(self, family='landsat'):
+        """Default NIR band. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('nir', None)
+
+    def red(self, family='landsat'):
+        """Default Red band. Family loosely describes products from a satellite series or product type."""
+        return self.deployment.get('target', {}).get(family, {}).get('red', None)
+
 
 class EasiCachingProxy():
     """Set, unset and return information about the user's caching-proxy configuration"""
-    
     def __init__(self):
         pass
     
-    
-    
+
 def _getlogger(name):
-    """Return a logger"""
+    """Return a logger. Define here to limit external dependecies"""
     # Default logger
     #   log.hasHandlers() = False
     #   log.getEffectiveLevel() = 30 = warning
