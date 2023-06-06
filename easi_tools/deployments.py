@@ -10,23 +10,22 @@ import collections
 # Map an internal deployment name to deployment variables and search parameters.
 # Update to ensure that the product/space/time parameters are available in the respective databases
 deployment_map = {
-    'csiro': {
-        'domain': 'csiro.easi-eo.solutions',
-        'db_database': 'easihub_csiro_db',
+    'adias': {
+        'domain': 'adias.aquawatchaus.space',
+        'db_database': '',
         'training_shapefile': '',
-        'scratch': 'easihub-csiro-user-scratch',
-        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
-        'location': 'Lake Hume, Australia',
-        'latitude': (-36.3, -35.8),
-        'longitude': (146.8, 147.3),
-        'time': ('2020-02-01', '2020-04-01'),
+        'scratch': '',
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'location': '',
+        'latitude': (0, 0),
+        'longitude': (0, 0),
+        'time': ('', ''),
         'aliases': {
-            'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
-                        'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
-                        'qa_band': 'oa_fmask'}
+            'landsat': {'qa_band': 'qa_pixel', 'nir': 'nir08', 'swir1': 'swir16', 'swir2': 'swir22'}
         },
         'qa_mask': {
-            'landsat': {'fmask':'valid'}
+            'landsat': {'nodata': False, 'water': 'land_or_cloud',
+                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
         }
     },
     'asia': {
@@ -45,7 +44,7 @@ deployment_map = {
             'sentinel-2': {'crs': 'epsg:32650', 'resolution': (-10,10)}
         },
         'aliases': {
-            'landsat': {'qa_band': 'qa_pixel'}
+            'landsat': {'qa_band': 'qa_pixel', 'nir': 'nir08', 'swir1': 'swir16', 'swir2': 'swir22'}
         },
         'qa_mask': {
             'landsat': {'nodata': False, 'water': 'land_or_cloud',
@@ -69,25 +68,7 @@ deployment_map = {
             'sentinel-2': {'crs': 'epsg:32718', 'resolution': (-10,10)}
         },
         'aliases': {
-            'landsat': {'qa_band': 'qa_pixel'},
-        },
-        'qa_mask': {
-            'landsat': {'nodata': False, 'water': 'land_or_cloud',
-                        'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
-        }
-    },
-    'adias': {
-        'domain': 'adias.aquawatchaus.space',
-        'db_database': '',
-        'training_shapefile': '',
-        'scratch': '',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
-        'location': '',
-        'latitude': (0, 0),
-        'longitude': (0, 0),
-        'time': ('', ''),
-        'aliases': {
-            'landsat': {'qa_band': 'qa_pixel'},
+            'landsat': {'qa_band': 'qa_pixel', 'nir': 'nir08', 'swir1': 'swir16', 'swir2': 'swir22'}
         },
         'qa_mask': {
             'landsat': {'nodata': False, 'water': 'land_or_cloud',
@@ -111,11 +92,30 @@ deployment_map = {
             'sentinel-2': {'crs': 'epsg:32618', 'resolution': (-10,10)}
         },
         'aliases': {
-            'landsat': {'qa_band': 'qa_pixel'},
+            'landsat': {'qa_band': 'qa_pixel', 'nir': 'nir08', 'swir1': 'swir16', 'swir2': 'swir22'}
         },
         'qa_mask': {
             'landsat': {'nodata': False, 'water': 'land_or_cloud',
                         'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
+        }
+    },
+    'csiro': {
+        'domain': 'csiro.easi-eo.solutions',
+        'db_database': 'easihub_csiro_db',
+        'training_shapefile': '',
+        'scratch': 'easihub-csiro-user-scratch',
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'location': 'Lake Hume, Australia',
+        'latitude': (-36.3, -35.8),
+        'longitude': (146.8, 147.3),
+        'time': ('2020-02-01', '2020-04-01'),
+        'aliases': {
+            'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
+                        'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
+                        'qa_band': 'oa_fmask'}
+        },
+        'qa_mask': {
+            'landsat': {'fmask':'valid'}
         }
     },
     'sub-apse2': {
@@ -130,6 +130,14 @@ deployment_map = {
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
         'time': ('2020-02-01', '2020-04-01'),
+        'aliases': {
+            'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
+                        'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
+                        'qa_band': 'oa_fmask'}
+        },
+        'qa_mask': {
+            'landsat': {'fmask':'valid'}
+        }
     },
 }
 
