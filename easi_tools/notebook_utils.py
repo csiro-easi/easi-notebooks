@@ -126,7 +126,8 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
         cluster.adapt(minimum=workers[0], maximum=workers[1])
         if wait:
             logger.info('Waiting for at least one cluster worker.')
-            client.wait_for_workers(n_workers=1)
+            # client.wait_for_workers(n_workers=1)  # Before release 2023.10.0
+            client.sync(client._wait_for_workers,n_workers=1) # Since release 2023.10.0
 
     # Local cluster
     else:
