@@ -79,8 +79,8 @@ deployment_map = {
                         'cloud': 'not_high_confidence', 'cloud_shadow': 'not_high_confidence'}
         }
     },
-    'eail': {
-        'domain': 'eail.easi-eo.solutions',
+    'cal': {
+        'domain': 'cal.ceos.org',
         'db_database': 'ceoseail_eail_db',
         'training_shapefile': './ancillary_data/VA_Counties_Newport_News.shp',
         'scratch': 'ceoseail-eail-user-scratch',
