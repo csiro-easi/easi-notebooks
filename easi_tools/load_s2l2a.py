@@ -1,6 +1,8 @@
 #!python
 
-# Sentinel-2 L2A scaling and offset corrections.
+# Sentinel-2 L2A Collection 0 scaling and offset corrections.
+# - Applies to data indexed from https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a
+# - The newer https://earth-search.aws.element84.com/v1/collections/sentinel-2-c1-l2a (Collection 1) may not be affected in the same way
 #
 # TL;DR:
 # DN values in COG files have different definitions depending on the processing baseline version
@@ -35,7 +37,7 @@
 #
 # ESA's reprocessing is flowing through to the AWS open data repository of S2 L2A but
 # while this stabilises we may see inconsistencies in time series queries due to:
-# - More than one processed version of a dataset (scene) in the database
+# - More than one processed version of a dataset (scene) in the AWS bucket and indexed in an EASI database
 # - Datasets (scenes) that indicate they have an offset applied by ESA but the offset correction
 #   has been not been applied to the COG
 #
@@ -91,9 +93,9 @@ add_offset = -0.1
 
 
 def highest_sequence_number(matches: list) -> dict:
-    """Filter for the highest e84 processing sequence number per scene (scene label excluding the sequence number)
+    """Filter for the highest element84 processing sequence number per scene (scene label excluding the sequence number)
     
-    : return : { scene_id_excluding_sequence_number : { highest_sequence_number : datacube.Dataset }}
+    : return : { scene_id_excluding_sequence_number : { highest_sequence_number : datacube.model.Dataset }}
     """
     p = re.compile('(S2.+)_([0-9]+)_(L2A)')
     sorter = {}
@@ -115,8 +117,8 @@ def highest_sequence_number(matches: list) -> dict:
     return sorter
 
 
-def ds_requires_offset(ds) -> bool:
-    """Test whether the datacube.Dataset requires offset to be applied"""
+def ds_requires_offset(ds: datacube.model.Dataset) -> bool:
+    """Return True if a dataset's metadata indicates that the offset correction should be applied"""
     props = ds.metadata_doc['properties']
     
     # If baseline is less than '04.00' then offset correction does not apply
@@ -134,8 +136,8 @@ def ds_requires_offset(ds) -> bool:
     return not boa_offset_applied
 
 
-def apply_correction_to_data(ds: xr.Dataset, offset: float = 0):
-    """Apply the scale and offset correction to each reflectance band where there is data (not nodata)"""
+def apply_correction_to_data(ds: xr.Dataset, offset: float = 0) -> xr.Dataset:
+    """Apply the scale and offset correction to each reflectance band where there is valid data (not nodata)"""
     refl_vars = [x for x in ds.data_vars if x in refl_bands]
     mask = masking.valid_data_mask(ds[refl_vars])
     # Save on a dask step?
@@ -151,12 +153,14 @@ def load_s2l2a_with_offset(
     query: dict,
 ) -> xr.Dataset:
     """
+    Replaces datacube.load(**query) for s2_l2a products.
+
     Method:
     - Find all datasets matching the query (dc.find_datasets)
-    - Filter for the highest e84 processing sequence number per scene (scene label excluding the sequence number)
+    - Filter for the highest element84 processing sequence number per scene (scene label excluding the sequence number)
     - Filter into two lists for datasets that have
-      - "s2:processing_baseline" >= 4 and "earthsearch:boa_offset_applied" == False (offset correction required)
-      - and everything else (no correction required)
+      - "s2:processing_baseline" >= "04.00" and "earthsearch:boa_offset_applied" == False (offset correction required)
+      - everything else (no correction required)
     - If either list is empty then load the non-empty list, apply scale (and offset if required), and return the xarray Dataset
     - Load and combine the two lists of datasets
       - Load each list, apply scale (and offset if required)
@@ -167,14 +171,14 @@ def load_s2l2a_with_offset(
     - Any 'groupby' function is applied to each of the xarray Datasets prior to them being combined.
       This could create "extra" (non-grouped) time layers in the combined Dataset if the groupby function
       would have grouped datasets (scenes) from both lists.
-    - Scale and offset are applied to the reflectance bands where there is data (not `nodata`).
+    - Scale and offset are applied to the reflectance bands where there is valid data (not `nodata`).
       This includes applying the "scale_factor" even if no datasets require the offset correction.
       Other masks can be applied by the user (e.g. pixel quality or cloud masking).
     """
 
     product = query.get('product', '<all products>')
     if product != 's2_l2a':
-        log.error(f'This function only applies to "s2_l2a" product, not: {product}')
+        log.error(f'This function only applies to the "s2_l2a" product, not: {product}')
         return None
     
     # Find all datasets matching the query
@@ -186,7 +190,7 @@ def load_s2l2a_with_offset(
         search_params = {k:v for k,v in query.items() if k in search_keys}
         matches = dc.find_datasets(**search_params)
     
-    # Filter for the highest e84 processing sequence number
+    # Filter for the highest element84 processing sequence number
     sorter = highest_sequence_number(matches)
 
     # Filter into two lists
@@ -241,7 +245,7 @@ def load_s2l2a_with_offset(
         **query,
     )
     
-    # 2. Adapt the query for our needs
+    # 2. Edit the query for our needs
     # Ensure that dask time chunking = 1
     dask_input = None
     if 'dask_chunks' in query:
