@@ -31,5 +31,5 @@ Here are the githack links to each of the HTML rendered notebooks.
 1. [05_-_Go_Big_or_Go_Home_Part_2.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/tutorials/dask/05_-_Go_Big_or_Go_Home_Part_2.html)
 1. [06_-_On_Chunks_-_The_Art_of_Dask_Tuning_Part_1.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/tutorials/dask/06_-_On_Chunks_-_The_Art_of_Dask_Tuning_Part_1.html)
 
-### Case studies
-_In progress._
+### Datasets
+1. [sentinel-2-l2a.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/datasets/sentinel-2-l2a.html)
