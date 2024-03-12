@@ -209,17 +209,21 @@ def load_s2l2a_with_offset(
     # If either list is empty then no separation and merge is required
     this_offset = None
     if len(offset_applied) == 0:
-        log.info('All datasets require offset correction. Apply scale and offset to all layers')
+        log.info('All datasets require offset correction')
+        msg = 'The valid_data_mask, scale and offset have been applied to the reflectance bands'
         this_offset = add_offset
     if len(offset_required) == 0:
-        log.info('No datasets require offset correction. Apply scale (no offset) to all layers')
+        log.info('No datasets require offset correction')
+        msg = 'The valid_data_mask and scale (no offset) have been applied to the reflectance bands'
         this_offset = 0
     if this_offset is not None:
         data = dc.load(
             datasets = matches_combined,
             **query
         )
-        return apply_correction_to_data(data, this_offset)
+        xx = apply_correction_to_data(data, this_offset)
+        log.info(msg)
+        return xx
 
     # DEBUG: What do we have
     # def func(s):
@@ -282,4 +286,5 @@ def load_s2l2a_with_offset(
         if dask_input.get('time', 1) != 1:
             combined = combined.chunk(dask_input)
 
+    log.info('The valid_data_mask, scale and offset have been applied to the reflectance bands')
     return combined
