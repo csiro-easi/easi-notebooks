@@ -1,4 +1,4 @@
 #!python 3
 
 from .deployments import EasiDefaults
-from .common import xarray_object_size
+from .common import xarray_object_size, unset_cachingproxy
