@@ -189,6 +189,9 @@ def load_s2l2a_with_offset(
     if matches is None:
         search_params = {k:v for k,v in query.items() if k in search_keys}
         matches = dc.find_datasets(**search_params)
+    if 'skip_broken_datasets' not in query:
+        # This helps to avoid data loading error messages
+        query['skip_broken_datasets'] = True
     
     # Filter for the highest element84 processing sequence number
     sorter = highest_sequence_number(matches)
