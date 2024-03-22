@@ -21,8 +21,8 @@ deployment_map = {
         'longitude': (-120.2, -119.9),
         'time': ('2022-02-01', '2022-05-01'),
         'target': {
-            'landsat': {'crs': 'epsg:32650', 'resolution': (-30,30)},
-            'sentinel-2': {'crs': 'epsg:32650', 'resolution': (-10,10)}
+            'landsat': {'crs': 'epsg:26911', 'resolution': (-30,30)},
+            'sentinel-2': {'crs': 'epsg:26911', 'resolution': (-10,10)}
         },
         'aliases': {
             'landsat': {'qa_band': 'qa_pixel', 'nir': 'nir08', 'swir1': 'swir16', 'swir2': 'swir22'}
@@ -148,7 +148,7 @@ deployment_map = {
 
 class EasiDefaults():
     """Provide deployment-specific default variables for EASI notebooks"""
-    
+
     def __init__(self, deployment=None):
         """Initialise"""
         self._log = _getlogger(self.__class__.__name__)
@@ -160,7 +160,7 @@ class EasiDefaults():
             self.proxy = EasiCachingProxy()
         if self.deployment:
             self._log.info(f'Successfully found configuration for deployment "{self.name}"')
-    
+
     def _validate(self, deployment) -> dict:
         """Return the dict associated with the deployment name"""
         names = deployment_map.keys()
@@ -169,7 +169,7 @@ class EasiDefaults():
             self._log.error(f'Select one of: {", ".join(names)}')
             return None
         return deployment_map[deployment]
-    
+
     def _find_deployment(self) -> str:
         """Use the deployment's database environment variable as a lookup into the deployment_map dict"""
         db_database = os.environ['DB_DATABASE']
@@ -183,7 +183,7 @@ class EasiDefaults():
             return None
         return deployment_name[0]
 
-    
+
     @property
     def domain(self):
         """Deployment domain"""
@@ -198,7 +198,7 @@ class EasiDefaults():
     def training_shapefile(self):
         """A local shapefile"""
         return self.deployment['training_shapefile']
-    
+
     @property
     def hub(self):
         """JupyterLab URL"""
@@ -219,7 +219,7 @@ class EasiDefaults():
 
     @property
     def terria(self):
-        """Terria Map URL""" 
+        """Terria Map URL"""
         if not self.deployment.get('map', True):
             self._log.warning(f'Deployment does not have a Map service: {self.name}')
             return None
@@ -252,7 +252,7 @@ class EasiDefaults():
             return self.deployment['latitude_big']
         self._log.warning(f'Default big latitude range not defined for "{self.deployment}". Using default latitude range')
         return self.latitude
-    
+
     @property
     def longitude_big(self):
         """Default big longitude range"""
@@ -287,7 +287,7 @@ class EasiDefaults():
     def aliases(self, family='landsat') -> collections.UserDict:
         """Return a dict-like object that maps a common name to a specific measurement/alias name.
         Family loosely describes products from a satellite series or product type.
-        
+
         The common name is returned if there is no specific measurement/alias name defined.
         That is, the common name should work as a measurement/alias name for the family in this deployment.
         Else, provide a specific measurement/alias name in the defaults above.
@@ -319,7 +319,7 @@ class EasiCachingProxy():
     """Set, unset and return information about the user's caching-proxy configuration"""
     def __init__(self):
         pass
-    
+
 
 def _getlogger(name):
     """Return a logger. Define here to limit external dependecies"""
