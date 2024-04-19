@@ -1,4 +1,4 @@
 #!python 3
 
-from .deployments import EasiNotebooks
-from .common import xarray_object_size
+from .deployments import EasiDefaults
+from .common import xarray_object_size, unset_cachingproxy

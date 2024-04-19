@@ -61,8 +61,9 @@ For contributors:
 1. Apply the pre-commit hook.
 1. Run each notebook (that has been updated) to populate the figures, tables and other *outputs* as you want them.
 1. Add a link into `html/readme.md` for each new notebook.
+1. Add an item to `whats_new.md`.
 1. `git add` and `git commit`.
-1. If eveything looks ok, `git push` to your fork of this repository and create a *pull request*.
+1. If everything looks ok, `git push` to your fork of this repository and create a *pull request*.
 
 #### pre-commit-config.yaml
 
