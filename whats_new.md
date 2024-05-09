@@ -1,5 +1,8 @@
 # EASI Notebooks - What's new <img align="right" src="resources/csiro_easi_logo.png">
 
+### 2024-05-09
+- Update `tutorial/dask/05_-_Go_Big_or_Go_Home_Part_2.ipynb` to use `hvplot` rather than `holoviews` - the syntax is simpler and it avoids the bug that exists in `holoviews` working with `xarray` that has crept into upstream libraries.
+
 ### 2023-06-09
 
 Large update to ensure the notebooks can work across all EASI deployments
