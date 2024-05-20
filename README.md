@@ -1,9 +1,9 @@
 # EASI Notebooks <img align="right" src="resources/csiro_easi_logo.png">
 
-Jupyter notebooks for learning and advancing your use of EASI, https://research.csiro.au/cceo/underpinning-technologies/earth-analytics/.
+Jupyter notebooks for learning and advancing your use of EASI, https://research.csiro.au/easi.
 
 - Use the examples in these notebooks to build your own data analysis and applications.
-- These notebooks have been adapted and write for CSIRO's EASI deployments.
+- These notebooks have been adapted and written for CSIRO's EASI deployments.
 
 These notebooks build on and contribute to the [Open Data Cube](https://github.com/opendatacube), [CEOS](https://ceos.org) and cloud-based EO analytics communities ([Acknowledgment and Credit](#Acknowledgment-and-Credit)).
 
@@ -19,17 +19,14 @@ These notebooks build on and contribute to the [Open Data Cube](https://github.c
 - Notebooks that introduce aspects of EASI, Dask and the Open Data Cube libraries.
 - Work through these as a Training exercise, and refer back to them for examples.
 
-#### datasets/
-- Demonstrations for accessing and using EASI data products.
+#### tutorials/data_products/
+- Examples for accessing and using EASI data products.
 - Adapt or copy from these for your own work.
 
-#### case-studies/
-- Science applications and examples.
-
 #### html/
-- HTML version of each notebook for easy browsing.
+- HTML version of each notebook for easy web browsing.
 
-#### tools/
+#### easi_tools/
 - Helper scripts used in the these notebooks.
 
 #### resources/
@@ -63,11 +60,7 @@ For contributors:
 1. Add a link into `html/readme.md` for each new notebook.
 1. Add an item to `whats_new.md`.
 1. `git add` and `git commit`.
-1. If everything looks ok, `git push` to your fork of this repository and create a *pull request*.
-
-#### pre-commit-config.yaml
-
-Work in progress (not configured yet).
+1. If everything looks ok, `git push` to your branch/fork of this repository and create a *pull request*.
 
 ## Acknowledgment and Credit
 
