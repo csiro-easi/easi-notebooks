@@ -1,7 +1,7 @@
 # EASI notebooks (HTML rendered) <img align="right" src="../resources/csiro_easi_logo.png">
 
 Github will render a notebook in the browser but its expensive to save cell outputs in notebooks, particularly if they contain javascript visualisations.
-So we create HTML-rendered versions of the notebooks with their outputs, prior to stripping away the outputs (see [Contributing](../README.md#Contributing)).
+So we create HTML-rendered versions of the notebooks with their outputs, prior to stripping away the outputs (see [Contributing](../README.md#contributing)).
 
 HTML files are not directly rendered in github but can be rendered by [raw.githack.com](https://raw.githack.com).
 
