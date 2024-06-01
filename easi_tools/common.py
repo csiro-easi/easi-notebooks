@@ -1,7 +1,7 @@
 #!python3
 
-from dask_gateway import Gateway
-
+import contextlib
+import os
 
 def xarray_object_size(data):
     """Return a formatted string"""
@@ -11,19 +11,16 @@ def xarray_object_size(data):
     return f'Dataset size: {val:.2f} {unit}'
 
 
-def init_dask_cluster() -> tuple:
-    """Connect to an existing or start a new dask gateway cluster.
-    Return (cluster, client)
-    """
-    gateway = Gateway()
-    clusters = gateway.list_clusters()
-    if not clusters:
-        print('Creating new cluster. Please wait for this to finish.')
-        cluster = gateway.new_cluster()
-    else:
-        print(f'An existing cluster was found. Connecting to: {clusters[0].name}')
-        cluster=gateway.connect(clusters[0].name)
-    cluster.adapt(minimum=1, maximum=4)  # A default starting point
-    client = cluster.get_client()
+@contextlib.contextmanager
+def unset_cachingproxy():
+    """Unset the EASI caching proxy with a context manager"""
+    # Inspired by https://stackoverflow.com/a/34333710
+    env = os.environ
+    remove = ('AWS_HTTPS', 'GDAL_HTTP_PROXY')
+    update_after = {k: env[k] for k in remove}
 
-    return (cluster, client)
+    try:
+        [env.pop(k, None) for k in remove]
+        yield
+    finally:
+        env.update(update_after)

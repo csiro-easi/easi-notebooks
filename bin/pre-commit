@@ -2,6 +2,10 @@
 #
 # Adapted from https://gist.github.com/minrk/6176788
 
+OIFS=$IFS
+IFS='
+'
+
 # Find notebooks to be committed
 NBS=`git diff-index --cached HEAD --name-status | grep -v ^D | cut -f2 | grep -ao -e '.*.ipynb' | uniq`
 # echo $NBS
@@ -10,13 +14,17 @@ for NB in $NBS; do
    # Create HTML version of $NB  (NbConvertApp says what its doing)
    jupyter nbconvert --to=html --output-dir=html/`dirname "$NB"` "$NB"
 
-   # Update relative links and git add html
-   html=`echo "$NB" | sed -E 's/\.ipynb$/.html/'`
-   sed -i'' -r 's:src="([\./]*)resources/:src="\1../resources/:' html/$html 
-   git add html/$html
+   # Update relative links, remove any secrets and git add html
+   HTML=`echo "$NB" | sed -E 's/\.ipynb$/.html/'`
+   sed -i'' -r 's:src="([\./]*)resources/:src="\1../resources/:' "html/$HTML"
+   for key in db_password aws_access_key_id aws_secret_access_key aws_session_token easi_user_allocation; do
+      sed -i'' -E 's/'$key'=.*/'$key'=/' "html/$HTML"
+   done
+   git add "html/$HTML"
 
    # Remove outputs from $NB  (NbConvertApp says what its doing)
-   jupyter nbconvert --clear-output "$NB"  # includes --inplace
    # jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace "$NB"
+   jupyter nbconvert --clear-output "$NB"
    git add "$NB"
 done
+IFS=$OIFS
