@@ -14,12 +14,12 @@ These notebooks build on and contribute to the [Open Data Cube](https://github.c
 
 ## Overview
 
-#### tutorials/
+#### notebooks/
 
 - Notebooks that introduce aspects of EASI, Dask and the Open Data Cube libraries.
 - Work through these as a Training exercise, and refer back to them for examples.
 
-#### tutorials/data_products/
+#### notebooks/data_products/
 - Examples for accessing and using EASI data products.
 - Adapt or copy from these for your own work.
 
