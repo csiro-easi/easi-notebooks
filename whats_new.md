@@ -1,5 +1,8 @@
 # EASI Notebooks - What's new <img align="right" src="resources/csiro_easi_logo.png">
 
+### 2024-06-05
+- Add Sentinel-2 Collection 1 L2a notebook, `notebooks/data_products/sentinel-2-c1-l2a.ipynb`
+
 ### 2024-05-22
 - Rename `tutorials` directory to `notebooks`
 - Move `data-products` to `notebooks` directory
