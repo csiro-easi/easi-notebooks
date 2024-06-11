@@ -10,7 +10,7 @@ HTML files are not directly rendered in github but can be rendered by [raw.githa
 ### Introduction tutorials
 1. [01-welcome-to-easi.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/01-welcome-to-easi.html)
 1. [02-data-storage.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/02-data-storage.html)
-1. [03-visualisation.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/03-visualisation.html)
+1. [03-visualisation.html](https://raw.githack.com/csiro-easi/easi-notebooks/tutorial-viz/html/notebooks/03-visualisation.html)
 1. [adding-python-libraries.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/adding-python-libraries.html)
 1. [easi-scratch-bucket.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/easi-scratch-bucket.html)
 

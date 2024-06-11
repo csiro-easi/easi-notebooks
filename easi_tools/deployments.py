@@ -116,7 +116,8 @@ deployment_map = {
         'aliases': {
             'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
                         'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
-                        'qa_band': 'oa_fmask'}
+                        'qa_band': 'oa_fmask'},
+            'sentinel-2': {'nir': 'nbart_nir_1', 'scl': 'oa_fmask'}
         },
         'qa_mask': {
             'landsat': {'fmask':'valid'}
@@ -163,7 +164,7 @@ class EasiDefaults():
 
     def _validate(self, deployment) -> dict:
         """Return the dict associated with the deployment name"""
-        names = deployment_map.keys()
+        names = list(deployment_map.keys())
         if deployment is None or deployment not in names:
             self._log.error(f'Deployment name not recognised: {deployment}')
             self._log.error(f'Select one of: {", ".join(names)}')
@@ -322,7 +323,7 @@ class EasiCachingProxy():
 
 
 def _getlogger(name):
-    """Return a logger. Define here to limit external dependecies"""
+    """Return a logger. Define here to limit external dependencies"""
     # Default logger
     #   log.hasHandlers() = False
     #   log.getEffectiveLevel() = 30 = warning
