@@ -101,7 +101,7 @@ def mostcommon_crs(dc, query):
     return crs_mostcommon
 
 
-def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=8786):
+def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=8786, **kwargs):
     """Initialize a Dask Gateway or Local cluster"""
     # Check inputs
     if isinstance(workers, (int, float)):
@@ -118,7 +118,7 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
         clusters = gateway.list_clusters()
         if not clusters:
             logger.info('Starting new cluster.')
-            cluster = gateway.new_cluster()
+            cluster = gateway.new_cluster(**kwargs)
         else:
             logger.info(f'An existing cluster was found. Connecting to: {clusters[0].name}')
             cluster = gateway.connect(clusters[0].name)
@@ -143,7 +143,8 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
         except:
             cluster = LocalCluster(
                 n_workers=workers[0],
-                scheduler_port=local_port
+                scheduler_port=local_port,
+                **kwargs
             )
             client = Client(cluster)
         
