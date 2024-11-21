@@ -37,7 +37,7 @@ deployment_map = {
         'db_database': 'easi_asia_db',
         'training_shapefile': '',
         'scratch': 'easi-asia-user-scratch',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1': 'sentinel1_grd_gamma0_20m', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tempe, Indonesia',
         'latitude': (-4.2, -3.9),
         'longitude': (119.8, 120.1),
@@ -86,7 +86,7 @@ deployment_map = {
         'scratch': 'ceoseail-eail-user-scratch',
         'ows': False,
         'map': False,
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1':'s1_rtc', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1': 's1_rtc', 'dem': 'copernicus_dem_30'},
         'location': 'Newport News, Virginia',
         'latitude': (37.02, 37.12),
         'longitude': (-76.55, -76.45),
@@ -108,7 +108,7 @@ deployment_map = {
         'db_database': 'easihub_csiro_db',
         'training_shapefile': '',
         'scratch': 'easihub-csiro-user-scratch',
-        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'sentinel-1': 'sentinel1_grd_gamma0_20m', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Hume, Australia',
         'latitude': (-36.3, -35.8),
         'longitude': (146.8, 147.3),
@@ -322,7 +322,7 @@ class EasiCachingProxy():
 
 
 def _getlogger(name):
-    """Return a logger. Define here to limit external dependecies"""
+    """Return a logger. Define here to limit external dependencies"""
     # Default logger
     #   log.hasHandlers() = False
     #   log.getEffectiveLevel() = 30 = warning

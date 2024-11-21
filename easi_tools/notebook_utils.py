@@ -30,15 +30,21 @@ import sys, os, re
 import logging
 from pathlib import Path
 from collections import Counter
+import contextlib
 
 # Dask
+import dask
 from dask.distributed import Client, LocalCluster
 from dask_gateway import Gateway
+
+# EASIDefaults
+from . import EasiDefaults
 
 # Set logger
 logger = logging.getLogger(Path(__file__).stem)
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler(sys.stdout))
+if not len(logger.handlers):
+    logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 def display_table(
@@ -55,16 +61,16 @@ def display_table(
             # reorderable=True,  # didn't work first try
         )
     else:
-        with pd.option_context('display.max_rows', None,
-                               'display.max_columns', None,
-                               'display.max_colwidth', -1):
-            table = HTML( df.to_html().replace("\\n","<br>") )
+        with pd.option_context("display.max_rows", None,
+                               "display.max_columns", None,
+                               "display.max_colwidth", -1):
+            table = HTML( df.to_html().replace(r"\n", "<br>") )
     display(table)
     
         
 def heading(txt: str):
     """Print a simple HTML heading"""
-    display(HTML( f'<h4>{txt}</h4>' ))
+    display(HTML( f"<h4>{txt}</h4>" ))
     
     
 def hv_table_hook(plot, element):
@@ -72,7 +78,7 @@ def hv_table_hook(plot, element):
     
     Use: df.hv.table().opts(hooks=[hv_table_hook])
     """
-    plot.handles['table'].autosize_mode="fit_viewport"
+    plot.handles["table"].autosize_mode="fit_viewport"
     # Other examples
     # plot.handles['table'].row_height = 40
     # from bokeh.models.widgets import DateFormatter
@@ -81,10 +87,10 @@ def hv_table_hook(plot, element):
 
 def xarray_object_size(data):
     """Return a formatted string"""
-    val, unit = data.nbytes / (1024 ** 2), 'MB'
+    val, unit = data.nbytes / (1024 ** 2), "MB"
     if val > 1024:
-        val, unit = data.nbytes / (1024 ** 3), 'GB'
-    return f'Dataset size: {val:.2f} {unit}'
+        val, unit = data.nbytes / (1024 ** 3), "GB"
+    return f"Dataset size: {val:.2f} {unit}"
 
 
 def mostcommon_crs(dc, query):
@@ -97,7 +103,7 @@ def mostcommon_crs(dc, query):
         crs_counts = Counter(crs_list)
         crs_mostcommon = crs_counts.most_common(1)[0][0]
     else:
-        logger.warning('No data was found for the supplied product query')
+        logger.warning("No data was found for the supplied product query")
     return crs_mostcommon
 
 
@@ -107,7 +113,7 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
     if isinstance(workers, (int, float)):
         workers = (int(workers), int(workers))
     if len(workers) != 2:
-        logger.error('Require workers to be a single integer or a 2-element tuple/list')
+        logger.error("Require workers to be a single integer or a 2-element tuple/list")
         return None, None
     if isinstance(local_port, (str, float)):
         local_port = int(local_port)
@@ -117,46 +123,49 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
         gateway = Gateway()
         clusters = gateway.list_clusters()
         if not clusters:
-            logger.info('Starting new cluster.')
+            logger.info("Starting new cluster")
             cluster = gateway.new_cluster(**kwargs)
         else:
-            logger.info(f'An existing cluster was found. Connecting to: {clusters[0].name}')
+            logger.info(f"An existing cluster was found. Connecting to: {clusters[0].name}")
             cluster = gateway.connect(clusters[0].name)
         client = cluster.get_client()
         cluster.adapt(minimum=workers[0], maximum=workers[1])
         if wait:
-            logger.info('Waiting for at least one cluster worker.')
+            logger.info("Waiting for at least one cluster worker")
             # client.wait_for_workers(n_workers=1)  # Before release 2023.10.0
             client.sync(client._wait_for_workers,n_workers=1) # Since release 2023.10.0
 
     # Local cluster
     else:
-        try:
-            # This creates a new Client connection to an existing Dask scheduler if one exists.
-            # There is no practical way to get the LocalCluster object from the existing scheduler,
-            # although the scheduler details can be accessed with `client.scheduler`.
-            # The LocalCluster object is only available from the notebook that created it.
-            # Restart the kernel or `client.close();cluster.close()` in each notebook that
-            # created one to remove existing LocalClusters.
-            client = Client(f'localhost:{local_port}', timeout='2s', n_workers=workers[0])
-            cluster = client.cluster  # None
-        except:
-            cluster = LocalCluster(
-                n_workers=workers[0],
-                scheduler_port=local_port,
-                **kwargs
-            )
-            client = Client(cluster)
+        cluster = LocalCluster(n_workers=4)
+        client = Client(cluster)
+        server = f'https://hub.{EasiDefaults().domain}'  # Or replace if not using EasiDefaults
+        user = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')  # Current user
+        dask.config.set({"distributed.dashboard.link": f'{server}{user}' + "proxy/{port}/status"})  # port is evaluated by dask
         
     return cluster, client
 
 
-def localcluster_dashboard(client, server='https://hub.csiro.easi-eo.solutions'):
+def localcluster_dashboard(client, server="https://hub.csiro.easi-eo.solutions"):
     """Return a dashboard link using jupyter proxy"""
     dashboard_link = client.dashboard_link
-    for host in ('127.0.0.1', 'localhost'):
+    for host in ("127.0.0.1", "localhost"):
         if host in dashboard_link:
-            port = re.search(':(\d+)\/status', dashboard_link).group(1)
+            port = re.search(r":(\d+)\/status", dashboard_link).group(1)
             dashboard_link = f'{server}{os.environ["JUPYTERHUB_SERVICE_PREFIX"]}proxy/{port}/status'
             break
     return dashboard_link
+
+
+@contextlib.contextmanager
+def unset_cachingproxy():
+    """Unset the EASI caching proxy with a context manager"""
+    # Inspired by https://stackoverflow.com/a/34333710
+    env = os.environ
+    remove = ("AWS_HTTPS", "GDAL_HTTP_PROXY")
+    update_after = {k: env[k] for k in remove}
+    try:
+        [env.pop(k, None) for k in remove]
+        yield
+    finally:
+        env.update(update_after)
