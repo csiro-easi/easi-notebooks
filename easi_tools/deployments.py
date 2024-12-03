@@ -15,7 +15,7 @@ deployment_map = {
         'db_database': 'adias_prod_db',
         'training_shapefile': '',
         'scratch': 'adias-prod-user-scratch',
-        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 'sentinel_2_c1_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
+        'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sar': 'asf_s1_grd_gamma0', 'dem': 'copernicus_dem_30'},
         'location': 'Lake Tahoe, California',
         'latitude': (39.0, 39.3),
         'longitude': (-120.2, -119.9),
