@@ -97,7 +97,7 @@ def highest_sequence_number(matches: list) -> dict:
     
     : return : { scene_id_excluding_sequence_number : { highest_sequence_number : datacube.model.Dataset }}
     """
-    p = re.compile('(S2.+)_([0-9]+)_(L2A)')
+    p = re.compile(r'(S2.+)_([0-9]+)_(L2A)')
     sorter = {}
     for ds in matches:
         # Separate the scene label from the sequence number
@@ -123,7 +123,7 @@ def ds_requires_offset(ds: datacube.model.Dataset) -> bool:
     
     # If baseline is less than '04.00' then offset correction does not apply
     baseline = props.get('s2:processing_baseline', '0.0')
-    p = re.compile('(\d+)\.(\d+)')
+    p = re.compile(r'(\d+)\.(\d+)')
     m = p.match(baseline)
     if not m:
         log.warning(f'Dataset processing_baseline does not match expected pattern: {baseline}')

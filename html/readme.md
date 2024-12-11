@@ -22,5 +22,6 @@ HTML files are not directly rendered in github but can be rendered by [raw.githa
 1. [06-On_Chunks_-_The_Art_of_Dask_Tuning_Part_1.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/dask/06-On_Chunks_-_The_Art_of_Dask_Tuning_Part_1.html)
 
 ### Data product examples
+1. [sentinel-1-gamma0.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/data_products/sentinel-1-gamma0.html)
 1. [sentinel-2-l2a.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/data_products/sentinel-2-l2a.html)
 1. [sentinel-2-c1-l2a.html](https://raw.githack.com/csiro-easi/easi-notebooks/main/html/notebooks/data_products/sentinel-2-c1-l2a.html)

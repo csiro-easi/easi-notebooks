@@ -1,5 +1,11 @@
 # EASI Notebooks - What's new <img align="right" src="resources/csiro_easi_logo.png">
 
+### 2024-12-04
+
+- Add Sentinel-1 RTC Gamma0 notebook, `notebooks/data_products/sentinel-1-gamma0.ipynb`
+- Consistency updates to `notebooks/01-welcome-to-easi.ipynb` and the `notebooks/data_products/sentinel-2-*l2a.ipynb` notebooks
+- Consolidate and update `easi-tools` functions, including for use with python3.12
+
 ### 2024-06-05
 - Add Sentinel-2 Collection 1 L2a notebook, `notebooks/data_products/sentinel-2-c1-l2a.ipynb`
 
