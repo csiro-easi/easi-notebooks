@@ -137,7 +137,7 @@ def initialize_dask(use_gateway=False, workers=(1,2), wait=False, local_port=878
 
     # Local cluster
     else:
-        cluster = LocalCluster(n_workers=4)
+        cluster = LocalCluster(n_workers=max(workers))
         client = Client(cluster)
         server = f'https://hub.{EasiDefaults().domain}'  # Or replace if not using EasiDefaults
         user = os.environ.get('JUPYTERHUB_SERVICE_PREFIX')  # Current user
