@@ -1,0 +1,31 @@
+{
+  "regions": [
+    { "name": "test_tasmania_forest_e2", "bbox": [147.1, -42.3, 147.3, -42.1] },
+    { "name": "test_vic_agriculture_e2", "bbox": [144.1, -36.7, 144.3, -36.5] },
+    { "name": "test_nsw_coast_n2", "bbox": [151.4, -33.9, 151.6, -33.7] },
+    { "name": "test_qld_tropical_e2", "bbox": [146.3, -16.5, 146.5, -16.3] },
+    { "name": "test_wa_arid_se2", "bbox": [116.8, -32.4, 117.0, -32.2] }
+  ],
+  "seasonal_windows": [
+    "2021-01-01/2021-02-28",
+    "2021-06-01/2021-07-31",
+    "2021-09-01/2021-10-31"
+  ],
+  "bands_s2": ["B02", "B03", "B04", "B8A", "B11", "B12", "SCL"],
+  "band_names": ["blue", "green", "red", "nir", "swir1", "swir2"],
+  "band_map": {
+    "B02": "blue",
+    "B03": "green",
+    "B04": "red",
+    "B8A": "nir",
+    "B11": "swir1",
+    "B12": "swir2"
+  },
+  "resolution": 20,
+  "output_crs": "EPSG:3577",
+  "tile_size": 224,
+  "catalog": {
+    "url": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "modifier": "planetary_computer"
+  }
+}
