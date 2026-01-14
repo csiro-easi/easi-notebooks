@@ -122,6 +122,25 @@ deployment_map = {
             'landsat': {'fmask':'valid'}
         }
     },
+    'dcceew': {
+        'domain': 'dcceew.easi-eo.solutions',
+        'db_database': 'dcceew_prod_db',
+        'training_shapefile': '',
+        'scratch': 'dcceew-prod-user-scratch',
+        'productmap': {'landsat': 'ga_ls8c_ard_3', 'sentinel-2': 'ga_s2am_ard_3', 'sentinel-1': 'sentinel1_grd_gamma0_20m', 'dem': 'copernicus_dem_30'},
+        'location': 'Lake Hume, Australia',
+        'latitude': (-36.3, -35.8),
+        'longitude': (146.8, 147.3),
+        'time': ('2020-02-01', '2020-04-01'),
+        'aliases': {
+            'landsat': {'red': 'nbart_red', 'green': 'nbart_green', 'blue': 'nbart_blue',
+                        'nir': 'nbart_nir', 'swir1': 'nbart_swir_1', 'swir2': 'nbart_swir_2',
+                        'qa_band': 'oa_fmask'}
+        },
+        'qa_mask': {
+            'landsat': {'fmask':'valid'}
+        }
+    },
     'sub-apse2': {
         'domain': 'sub-apse2.easi-eo.solutions',
         'db_database': '',
