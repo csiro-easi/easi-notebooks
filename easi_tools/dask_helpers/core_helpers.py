@@ -15,6 +15,7 @@ import xarray as xr
 from pystac_client import Client as PClient
 import planetary_computer as pc
 import json
+from urllib.parse import urlparse
 
 
 @dataclass
