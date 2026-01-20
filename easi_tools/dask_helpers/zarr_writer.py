@@ -1,4 +1,4 @@
-from core_helpers import *
+from .core_helpers import *
 import xarray as xr
 
 

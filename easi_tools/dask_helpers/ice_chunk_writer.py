@@ -1,4 +1,4 @@
-from core_helpers import *
+from .core_helpers import *
 import icechunk as ic
 from icechunk.xarray import to_icechunk
 import boto3
