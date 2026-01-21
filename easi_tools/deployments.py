@@ -81,9 +81,9 @@ deployment_map = {
     },
     'cal': {
         'domain': 'cal.ceos.org',
-        'db_database': 'ceoseail_eail_db',
+        'db_database': 'easi_cal_db',
         'training_shapefile': './ancillary_data/VA_Counties_Newport_News.shp',
-        'scratch': 'ceoseail-eail-user-scratch',
+        'scratch': 'easi-cal-user-scratch',
         'ows': False,
         'map': False,
         'productmap': {'landsat': 'landsat8_c2l2_sr', 'sentinel-2': 's2_l2a', 'sentinel-1': 's1_rtc', 'dem': 'copernicus_dem_30'},
