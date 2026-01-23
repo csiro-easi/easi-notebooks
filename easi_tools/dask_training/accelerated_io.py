@@ -214,10 +214,9 @@ def make_external_source_fn(
         try:
             batch = next(state["it"])
         except StopIteration:
-            state["it"] = None          # <-- critical: allow next epoch to recreate iterator
+            state["it"] = None 
             raise
         return batch["inputs"], batch["labels"]
-
 
     return source
 
@@ -272,7 +271,6 @@ def make_dali_iterator(
         output_map=["inputs", "labels"],
         auto_reset=True,
     )
-
 
 
 

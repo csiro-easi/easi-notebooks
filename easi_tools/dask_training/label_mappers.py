@@ -54,7 +54,7 @@ class WorldCoverLabelMapper(LabelMapper):
         return y_mapped.astype(np.int64, copy=False)
 
 
-
+# Something to help io, only slightly better than base
 class DictLUTLabelMapper(LabelMapper):
     def __init__(self, code_map: dict, ignore_index=255, max_code=255):
         self.code_map = dict(code_map)
