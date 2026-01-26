@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from torch.nn.parallel import DistributedDataParallel as DDP
+
 
 
 
@@ -46,6 +48,17 @@ def to_device(batch, device):
         else:
             out[k] = v  # keep meta as is
     return out
+
+
+def wrap_model_with_ddp(model, lr, device_id: int, param_selector=None):
+    model = model.to(device_id)
+    ddp_model = DDP(model, device_ids=[device_id], output_device=device_id)
+    if param_selector is None:
+        params = filter(lambda p: p.requires_grad, ddp_model.parameters())
+    else:
+        params = param_selector(ddp_model)
+    optimizer = optim.Adam(params, lr=lr)
+    return ddp_model, optimizer
 
 
 def wrap_model_with_fsdp(model, lr, param_selector=None):
