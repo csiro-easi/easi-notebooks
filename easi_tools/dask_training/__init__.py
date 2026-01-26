@@ -9,6 +9,7 @@ from .training_helpers import (
     evaluate,
     SegmentationTask,
     wrap_model_with_fsdp,
+    wrap_model_with_ddp,
     train_one_epoch_log
 )
 from .label_mappers import (
@@ -30,6 +31,7 @@ __all__ = [
     'evaluate',
     'SegmentationTask',
     'wrap_model_with_fsdp',
+    'wrap_model_with_ddp',
     'train_one_epoch_log',
     'LabelMapper',
     'WorldCoverLabelMapper',
