@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple
 
 import numpy as np
-#import cupy as cp
+import cupy as cp
 #import torch
 #from torch.utils import dlpack
 
@@ -25,51 +25,55 @@ class GeoBatchSpec:
     # Optional: enforce patching at read time if the stored samples are larger
     patch_hw: Optional[Tuple[int, int]] = (224, 224)
 
-# Just in case
-def _to_numpy(a):
-    # cupy supports .get() to transfer to host; numpy arrays won't have it
-    get = getattr(a, "get", None)
-    if callable(get):
-        return get()
-    return np.asarray(a)
 
+def _is_cuda_array(a) -> bool:
+    return hasattr(a, "__cuda_array_interface__")
+
+
+def _xp(a):
+    if cp is not None and _is_cuda_array(a):
+        return cp
+    return np
 
 
 class BatchAdapter:
-    """
-    Fast, picklable adapter.
-    If label_lut is provided, mapping is vectorized: y_np = label_lut[y_np].
-    """
     def __init__(self, label_mapper=None, label_lut=None, ignore_index=255):
         self.label_mapper = label_mapper
-        self.label_lut = label_lut
         self.ignore_index = ignore_index
 
+        self.label_lut_np = None
+        self.label_lut_cp = None
+        if label_lut is not None:
+            self.label_lut_np = np.asarray(label_lut, dtype=np.int64)
+            if cp is not None:
+                self.label_lut_cp = cp.asarray(self.label_lut_np)
 
-    def __call__(self, x_raw: Any, y_raw: Any, meta: dict):
-        x_np = np.asarray(_to_numpy(x_raw), dtype=np.float32)
-    
-        if self.label_lut is not None:
-            y_np = _to_numpy(y_raw)
-    
-            nan_mask = np.isnan(y_np) if np.issubdtype(y_np.dtype, np.floating) else None
-    
-            y_int = y_np.astype(np.int64, copy=False)
-            y_mapped = self.label_lut[y_int]
-    
+    def __call__(self, x_raw, y_raw, meta: dict):
+        xp = _xp(x_raw)
+        x = xp.asarray(x_raw, dtype=xp.float32)
+
+        yp = xp
+
+        if self.label_lut_np is not None:
+            y = yp.asarray(y_raw)
+            nan_mask = yp.isnan(y) if yp.issubdtype(y.dtype, yp.floating) else None
+
+            y_int = y.astype(yp.int64, copy=False)
+            lut = self.label_lut_cp if (yp is cp and self.label_lut_cp is not None) else self.label_lut_np
+            y = lut[y_int]
+
             if nan_mask is not None:
-                y_mapped = np.asarray(y_mapped, dtype=np.int64).copy()
-                y_mapped[nan_mask] = self.ignore_index
-    
-            y_np = np.asarray(y_mapped, dtype=np.int64)
-    
+                y = y.astype(yp.int64, copy=False).copy()
+                y[nan_mask] = self.ignore_index
+
+            y = y.astype(yp.int64, copy=False)
         else:
-            y_np = np.asarray(y_raw)
+            # Note: if label_mapper is NumPy-only, keep this path CPU-only for now.
+            y = yp.asarray(y_raw, dtype=yp.int64)
             if self.label_mapper is not None:
-                y_np = self.label_mapper.map(y_np)
-            y_np = np.asarray(y_np, dtype=np.int64)
-    
-        return x_np, y_np
+                y = self.label_mapper.map(y)
+
+        return x, y
 
 
 
@@ -107,34 +111,56 @@ class IcechunkDaliIterator:
         n = self.x_arr.shape[0]
         self.indices = np.arange(n) if indices is None else np.array(indices)
         self.n = len(self.indices)
-        self.i = 0
         self._cache = OrderedDict()
-        self._cache_max = 256  # tune; 0 disables
+        self.i = 0
+        self._cache_bytes = 0
+        self._cache_max_bytes = 2 * 1024**3  # tune as needed
+        # default: do not cache CuPy samples, probably not needed with dali
+        self._cache_gpu = False  
 
+
+    def _nbytes(self, x, y):
+        xb = int(getattr(x, "nbytes", 0))
+        yb = int(getattr(y, "nbytes", 0))
+        return xb + yb
+
+    def _maybe_cache_put(self, idx, x, y):
+        is_gpu = hasattr(x, "__cuda_array_interface__")
+        if is_gpu and not self._cache_gpu:
+            return
+
+        b = self._nbytes(x, y)
+        if b > self._cache_max_bytes:
+            return
+
+        while self._cache_bytes + b > self._cache_max_bytes and len(self._cache) > 0:
+            _, (old_x, old_y, old_b) = self._cache.popitem(last=False)
+            self._cache_bytes -= old_b
+
+        self._cache[idx] = (x, y, b)
+        self._cache_bytes += b
 
     def __iter__(self):
         self.i = 0
         if self.shuffle:
             np.random.shuffle(self.indices)
-        if self._cache_max > 0:
+        if self._cache_max_bytes > 0:
             self._cache.clear()
+            self._cache_bytes = 0
         return self
 
     def _get_sample(self, idx: int):
-        if self._cache_max > 0 and idx in self._cache:
+        if idx in self._cache:
             self._cache.move_to_end(idx)
-            return self._cache[idx]
-    
+            x, y, _ = self._cache[idx]
+            return x, y
+
         x_raw = self.x_arr[idx]
         y_raw = self.y_arr[idx]
-        x_np, y_np = self.adapter(x_raw, y_raw, meta={"index": idx})
-    
-        if self._cache_max > 0:
-            self._cache[idx] = (x_np, y_np)
-            if len(self._cache) > self._cache_max:
-                self._cache.popitem(last=False)
-    
-        return x_np, y_np
+        x, y = self.adapter(x_raw, y_raw, meta={"index": idx})
+
+        self._maybe_cache_put(idx, x, y)
+        return x, y
 
 
     def __next__(self):
@@ -164,8 +190,9 @@ class IcechunkDaliIterator:
                 x_list.append(x_np)
                 y_list.append(y_np)
     
-            x_b = np.stack(x_list, axis=0)
-            y_b = np.stack(y_list, axis=0)
+            xp = _xp(x_list[0])
+            x_b = xp.stack(x_list, axis=0)
+            y_b = xp.stack(y_list, axis=0)
             return {"inputs": x_b, "labels": y_b, "meta": {"indices": idxs}}
     
         # Fallback: random indices
@@ -176,8 +203,9 @@ class IcechunkDaliIterator:
             y_list.append(y_np)
 
     
-        x_b = np.stack(x_list, axis=0)
-        y_b = np.stack(y_list, axis=0)
+        xp = _xp(x_list[0])
+        x_b = xp.stack(x_list, axis=0)
+        y_b = xp.stack(y_list, axis=0)
         return {"inputs": x_b, "labels": y_b, "meta": {"indices": idxs}}
 
 
