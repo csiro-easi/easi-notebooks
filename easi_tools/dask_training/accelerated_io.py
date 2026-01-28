@@ -193,7 +193,7 @@ class IcechunkDaliIterator:
             xp = _xp(x_list[0])
             x_b = xp.stack(x_list, axis=0)
             y_b = xp.stack(y_list, axis=0)
-            return {"inputs": x_b, "labels": y_b, "meta": {"indices": idxs}}
+            return (x_b, y_b)
     
         # Fallback: random indices
         x_list, y_list = [], []
@@ -206,47 +206,47 @@ class IcechunkDaliIterator:
         xp = _xp(x_list[0])
         x_b = xp.stack(x_list, axis=0)
         y_b = xp.stack(y_list, axis=0)
-        return {"inputs": x_b, "labels": y_b, "meta": {"indices": idxs}}
+        return (x_b, y_b)
 
 
-def make_external_source_fn(
-    bucket, repo_prefix, snapshot_id,
-    batch_size, indices, shuffle,
-    region="ap-southeast-2", branch="main",
-    spec=None, adapter=None,
-):
-    if spec is None:
-        spec = GeoBatchSpec(x_key="features", y_key="labels", patch_hw=None)
-    if adapter is None:
-        adapter = BatchAdapter(label_mapper=None)
+# def make_external_source_fn(
+#     bucket, repo_prefix, snapshot_id,
+#     batch_size, indices, shuffle,
+#     region="ap-southeast-2", branch="main",
+#     spec=None, adapter=None,
+# ):
+#     if spec is None:
+#         spec = GeoBatchSpec(x_key="features", y_key="labels", patch_hw=None)
+#     if adapter is None:
+#         adapter = BatchAdapter(label_mapper=None)
 
-    state = {"it": None}
+#     state = {"it": None}
 
-    def get_iter():
-        return IcechunkDaliIterator(
-            bucket=bucket,
-            repo_prefix=repo_prefix,
-            snapshot_id=snapshot_id,
-            spec=spec,
-            adapter=adapter,
-            batch_size=batch_size,
-            indices=indices,
-            shuffle=shuffle,
-            region=region,
-            branch=branch,
-        )
+#     def get_iter():
+#         return IcechunkDaliIterator(
+#             bucket=bucket,
+#             repo_prefix=repo_prefix,
+#             snapshot_id=snapshot_id,
+#             spec=spec,
+#             adapter=adapter,
+#             batch_size=batch_size,
+#             indices=indices,
+#             shuffle=shuffle,
+#             region=region,
+#             branch=branch,
+#         )
 
-    def source():
-        if state["it"] is None:
-            state["it"] = iter(get_iter())
-        try:
-            batch = next(state["it"])
-        except StopIteration:
-            state["it"] = None 
-            raise
-        return batch["inputs"], batch["labels"]
+#     def source():
+#         if state["it"] is None:
+#             state["it"] = iter(get_iter())
+#         try:
+#             batch = next(state["it"])
+#         except StopIteration:
+#             state["it"] = None 
+#             raise
+#         return batch["inputs"], batch["labels"]
 
-    return source
+#     return source
 
 
 @pipeline_def()
@@ -257,6 +257,7 @@ def dali_pipeline(eii):
         device="gpu",
         batch=True,
         parallel=False,
+        cycle="raise",
     )
     return images, labels
 
@@ -270,19 +271,32 @@ def make_dali_iterator(
     snapshot_id,
     shuffle,
     threads=8,
-    prefetch_queue_depth=8,
+    prefetch_queue_depth=6,
     spec=None,
     adapter=None,
 ):
-    eii_fn = make_external_source_fn(
+    # eii_fn = make_external_source_fn(
+    #     bucket=bucket,
+    #     repo_prefix=repo_prefix,
+    #     snapshot_id=snapshot_id,
+    #     batch_size=batch_size,
+    #     indices=base_indices,
+    #     shuffle=shuffle,
+    #     spec=spec,
+    #     adapter=adapter,
+    # )
+
+    eii_fn = IcechunkDaliIterator(
         bucket=bucket,
         repo_prefix=repo_prefix,
         snapshot_id=snapshot_id,
+        spec=spec or GeoBatchSpec(x_key="features", y_key="labels", patch_hw=None),
+        adapter=adapter or BatchAdapter(label_mapper=None),
         batch_size=batch_size,
         indices=base_indices,
         shuffle=shuffle,
-        spec=spec,
-        adapter=adapter,
+        region="ap-southeast-2",
+        branch="main",
     )
 
     pipe = dali_pipeline(

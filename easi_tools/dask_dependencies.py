@@ -14,7 +14,8 @@ def setup_cluster(client):
             'dask-pytorch-ddp',
             'zarr>=3.0.8',
             'icechunk',
-            'nvidia-dali-cuda120'
+            'nvidia-dali-cuda120',
+            'cupy-cuda12x'
         ]
 
         try:
