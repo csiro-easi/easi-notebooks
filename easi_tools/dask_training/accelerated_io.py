@@ -249,6 +249,26 @@ class IcechunkDaliIterator:
 #     return source
 
 
+class IcechunkExternalSource:
+    def __init__(self, **it_kwargs):
+        self.it_kwargs = it_kwargs
+        self.it = None
+
+    def reset(self):
+        self.it = IcechunkDaliIterator(**self.it_kwargs)
+        iter(self.it)
+
+    def __call__(self):
+        if self.it is None:
+            self.reset()
+        try:
+            x_b, y_b = next(self.it)
+        except StopIteration:
+            self.it = None
+            raise
+        return x_b, y_b
+
+
 @pipeline_def()
 def dali_pipeline(eii):
     images, labels = fn.external_source(
@@ -286,7 +306,7 @@ def make_dali_iterator(
     #     adapter=adapter,
     # )
 
-    eii_fn = IcechunkDaliIterator(
+    eii_fn = IcechunkExternalSource(
         bucket=bucket,
         repo_prefix=repo_prefix,
         snapshot_id=snapshot_id,
