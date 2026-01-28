@@ -277,7 +277,6 @@ def dali_pipeline(eii):
         device="gpu",
         batch=True,
         parallel=False,
-        cycle="raise",
     )
     return images, labels
 
