@@ -1,5 +1,9 @@
 # EASI Notebooks - What's new <img align="right" src="resources/csiro_easi_logo.png">
 
+### 2026-03-01
+
+- Add NISAR GSLC notebook, `notebooks/data_products/nisar-gslc.ipynb`
+
 ### 2025-11-20
 
 - Add NovaSAR-1 RTC Gamma0 notebook, `notebooks/data_products/novasar-1-gamma0.ipynb`
