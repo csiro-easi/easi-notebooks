@@ -7,3 +7,5 @@ from .notebook_utils import \
     mostcommon_crs, \
     unset_cachingproxy, \
     xarray_object_size
+
+from .dask_dependencies import setup_cluster

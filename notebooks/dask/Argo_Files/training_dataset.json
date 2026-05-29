@@ -1,0 +1,63 @@
+{
+  "regions": [
+    { "name": "tasmania_forest_c", "bbox": [146.5, -42.0, 146.7, -41.8] },
+    { "name": "tasmania_forest_w", "bbox": [146.3, -42.0, 146.5, -41.8] },
+    { "name": "tasmania_forest_e", "bbox": [146.7, -42.0, 146.9, -41.8] },
+    { "name": "tasmania_forest_s", "bbox": [146.5, -42.2, 146.7, -42.0] },
+
+    { "name": "vic_agriculture_c", "bbox": [143.5, -37.0, 143.7, -36.8] },
+    { "name": "vic_agriculture_w", "bbox": [143.3, -37.0, 143.5, -36.8] },
+    { "name": "vic_agriculture_e", "bbox": [143.7, -37.0, 143.9, -36.8] },
+    { "name": "vic_agriculture_n", "bbox": [143.5, -36.8, 143.7, -36.6] },
+    { "name": "vic_agriculture_s", "bbox": [143.5, -37.2, 143.7, -37.0] },
+
+    { "name": "nsw_coast_c", "bbox": [150.8, -34.5, 151.0, -34.3] },
+    { "name": "nsw_coast_n", "bbox": [150.8, -34.3, 151.0, -34.1] },
+    { "name": "nsw_coast_s", "bbox": [150.8, -34.7, 151.0, -34.5] },
+    { "name": "nsw_coast_w", "bbox": [150.6, -34.5, 150.8, -34.3] },
+    { "name": "nsw_coast_e", "bbox": [151.0, -34.5, 151.2, -34.3] },
+
+    { "name": "qld_tropical_c", "bbox": [145.7, -16.5, 145.9, -16.3] },
+    { "name": "qld_tropical_n", "bbox": [145.7, -16.3, 145.9, -16.1] },
+    { "name": "qld_tropical_s", "bbox": [145.7, -16.7, 145.9, -16.5] },
+    { "name": "qld_tropical_w", "bbox": [145.5, -16.5, 145.7, -16.3] },
+    { "name": "qld_tropical_e", "bbox": [145.9, -16.5, 146.1, -16.3] },
+
+    { "name": "wa_arid_c", "bbox": [116.0, -32.0, 116.2, -31.8] },
+    { "name": "wa_arid_n", "bbox": [116.0, -31.8, 116.2, -31.6] },
+    { "name": "wa_arid_s", "bbox": [116.0, -32.2, 116.2, -32.0] },
+    { "name": "wa_arid_w", "bbox": [115.8, -32.0, 116.0, -31.8] },
+    { "name": "wa_arid_e", "bbox": [116.2, -32.0, 116.4, -31.8] },
+
+    { "name": "sa_mallee_1", "bbox": [140.5, -34.8, 140.7, -34.6] },
+    { "name": "sa_mallee_2", "bbox": [140.7, -34.8, 140.9, -34.6] },
+
+    { "name": "nt_savanna_1", "bbox": [132.0, -14.0, 132.2, -13.8] },
+    { "name": "nt_savanna_2", "bbox": [132.2, -14.0, 132.4, -13.8] },
+
+    { "name": "qld_inland_pasture_1", "bbox": [147.0, -25.0, 147.2, -24.8] },
+    { "name": "qld_inland_pasture_2", "bbox": [147.2, -25.0, 147.4, -24.8] }
+  ],
+  "seasonal_windows": [
+    "2021-01-01/2021-02-28",
+    "2021-06-01/2021-07-31",
+    "2021-09-01/2021-10-31"
+  ],
+  "bands_s2": ["B02", "B03", "B04", "B8A", "B11", "B12", "SCL"],
+  "band_names": ["blue", "green", "red", "nir", "swir1", "swir2"],
+  "band_map": {
+    "B02": "blue",
+    "B03": "green",
+    "B04": "red",
+    "B8A": "nir",
+    "B11": "swir1",
+    "B12": "swir2"
+  },
+  "resolution": 20,
+  "output_crs": "EPSG:3577",
+  "tile_size": 224,
+  "catalog": {
+    "url": "https://planetarycomputer.microsoft.com/api/stac/v1",
+    "modifier": "planetary_computer"
+  }
+}
